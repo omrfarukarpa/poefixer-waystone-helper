@@ -1,0 +1,11 @@
+# Build artifacts
+bin/
+obj/
+*.user
+.vs/
+
+# Local-only: assistant notes, testing notes, local image copies
+CLAUDE.md
+.claude/
+TESTING.md
+docs/

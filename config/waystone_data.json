@@ -1,0 +1,1243 @@
+{
+  "generatedAt": "2026-06-25T02:12:31Z",
+  "source": "bundled MapModHelper waystone data",
+  "notes": [
+    "Runtime plugin uses this bundled file and does not require any external data folders.",
+    "This file is updated in new plugin builds when waystone information changes."
+  ],
+  "generatedStats": [
+    {
+      "statId": "map_monster_potency_+%_final_from_map",
+      "displayName": "Monster Effectiveness",
+      "badgeLabel": "E"
+    },
+    {
+      "statId": "map_item_drop_rarity_+%_final_from_map",
+      "displayName": "Item Rarity",
+      "badgeLabel": "R"
+    },
+    {
+      "statId": "map_pack_size_+%_final_from_map",
+      "displayName": "Monster Pack Size",
+      "badgeLabel": "P"
+    },
+    {
+      "statId": "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "displayName": "Monster Rarity",
+      "badgeLabel": "MR"
+    },
+    {
+      "statId": "map_map_item_drop_chance_+%_final_from_map",
+      "displayName": "Waystone Drop Chance",
+      "badgeLabel": "W"
+    }
+  ],
+  "modStatIdsById": {
+    "MapMonsterAccuracy1": [
+      "map_monsters_accuracy_rating_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterAccuracy2": [
+      "map_monsters_accuracy_rating_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterAccuracy3": [
+      "map_monsters_accuracy_rating_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterAccuracy4": [
+      "map_monsters_accuracy_rating_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterArmourBreak1": [
+      "map_monsters_armour_break_physical_damage_%_dealt_as_armour_break",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterArmourBreak2": [
+      "map_monsters_armour_break_physical_damage_%_dealt_as_armour_break",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterArmourBreak3": [
+      "map_monsters_armour_break_physical_damage_%_dealt_as_armour_break",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterArmourBreak4": [
+      "map_monsters_armour_break_physical_damage_%_dealt_as_armour_break",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterArmoured1": [
+      "map_monsters_additional_strength_ratio_%_for_armour",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterBleeding1": [
+      "map_monsters_chance_to_inflict_bleeding_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterBleeding2": [
+      "map_monsters_chance_to_inflict_bleeding_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterBleeding3": [
+      "map_monsters_chance_to_inflict_bleeding_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterBleeding4": [
+      "map_monsters_chance_to_inflict_bleeding_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterCritIncrease1": [
+      "map_monsters_critical_strike_chance_+%",
+      "map_monsters_critical_strike_multiplier_+",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      ""
+    ],
+    "MapMonsterCritIncrease2": [
+      "map_monsters_critical_strike_chance_+%",
+      "map_monsters_critical_strike_multiplier_+",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      ""
+    ],
+    "MapMonsterCritIncrease3": [
+      "map_monsters_critical_strike_chance_+%",
+      "map_monsters_critical_strike_multiplier_+",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      ""
+    ],
+    "MapMonsterCritIncrease4": [
+      "map_monsters_critical_strike_chance_+%",
+      "map_monsters_critical_strike_multiplier_+",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsChaos1": [
+      "map_monsters_%_all_damage_to_gain_as_chaos",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsChaos2": [
+      "map_monsters_%_all_damage_to_gain_as_chaos",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsChaos3": [
+      "map_monsters_%_all_damage_to_gain_as_chaos",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsChaos4": [
+      "map_monsters_%_all_damage_to_gain_as_chaos",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsCold1": [
+      "map_monsters_%_all_damage_to_gain_as_cold",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsCold2": [
+      "map_monsters_%_all_damage_to_gain_as_cold",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsCold3": [
+      "map_monsters_%_all_damage_to_gain_as_cold",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsCold4": [
+      "map_monsters_%_all_damage_to_gain_as_cold",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsFire1": [
+      "map_monsters_%_all_damage_to_gain_as_fire",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsFire2": [
+      "map_monsters_%_all_damage_to_gain_as_fire",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsFire3": [
+      "map_monsters_%_all_damage_to_gain_as_fire",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsFire4": [
+      "map_monsters_%_all_damage_to_gain_as_fire",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsLightning1": [
+      "map_monsters_%_all_damage_to_gain_as_lightning",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsLightning2": [
+      "map_monsters_%_all_damage_to_gain_as_lightning",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsLightning3": [
+      "map_monsters_%_all_damage_to_gain_as_lightning",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageAsLightning4": [
+      "map_monsters_%_all_damage_to_gain_as_lightning",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageIncrease1": [
+      "map_monsters_damage_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageIncrease2": [
+      "map_monsters_damage_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageIncrease3": [
+      "map_monsters_damage_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterDamageIncrease4": [
+      "map_monsters_damage_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterElementAilmentChance1": [
+      "map_monsters_elemental_ailment_chance_+%",
+      "dummy_stat_display_nothing",
+      "dummy_stat_display_nothing",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      ""
+    ],
+    "MapMonsterElementAilmentChance2": [
+      "map_monsters_elemental_ailment_chance_+%",
+      "dummy_stat_display_nothing",
+      "dummy_stat_display_nothing",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      ""
+    ],
+    "MapMonsterElementAilmentChance3": [
+      "map_monsters_elemental_ailment_chance_+%",
+      "dummy_stat_display_nothing",
+      "dummy_stat_display_nothing",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      ""
+    ],
+    "MapMonsterElementAilmentChance4": [
+      "map_monsters_elemental_ailment_chance_+%",
+      "dummy_stat_display_nothing",
+      "dummy_stat_display_nothing",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      ""
+    ],
+    "MapMonsterElementalResistances1": [
+      "map_monsters_additional_elemental_resistance",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterElementalResistances2": [
+      "map_monsters_additional_elemental_resistance",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterElementalResistances3": [
+      "map_monsters_additional_elemental_resistance",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterElementalResistances4": [
+      "map_monsters_additional_elemental_resistance",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterEnergyShield1": [
+      "map_monsters_maximum_life_%_to_add_to_maximum_energy_shield",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterEvasive1": [
+      "map_monsters_additional_dexterity_ratio_%_for_evasion",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterLifeIncrease1": [
+      "map_monsters_life_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterLifeIncrease2": [
+      "map_monsters_life_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterLifeIncrease3": [
+      "map_monsters_life_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterLifeIncrease4": [
+      "map_monsters_life_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterPoisoning1": [
+      "map_monsters_chance_to_poison_on_hit_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterPoisoning2": [
+      "map_monsters_chance_to_poison_on_hit_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterPoisoning3": [
+      "map_monsters_chance_to_poison_on_hit_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterPoisoning4": [
+      "map_monsters_chance_to_poison_on_hit_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterSpeedIncrease3": [
+      "map_monster_attack_cast_and_movement_speed_+%",
+      "dummy_stat_display_nothing",
+      "dummy_stat_display_nothing",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      ""
+    ],
+    "MapMonsterSpeedIncrease4": [
+      "map_monster_attack_cast_and_movement_speed_+%",
+      "dummy_stat_display_nothing",
+      "dummy_stat_display_nothing",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      ""
+    ],
+    "MapMonsterStunAilmentThreshold1": [
+      "map_monsters_stun_threshold_+%",
+      "map_monsters_ailment_threshold_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      ""
+    ],
+    "MapMonsterStunAilmentThreshold2": [
+      "map_monsters_stun_threshold_+%",
+      "map_monsters_ailment_threshold_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      ""
+    ],
+    "MapMonsterStunAilmentThreshold3": [
+      "map_monsters_stun_threshold_+%",
+      "map_monsters_ailment_threshold_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      ""
+    ],
+    "MapMonsterStunAilmentThreshold4": [
+      "map_monsters_stun_threshold_+%",
+      "map_monsters_ailment_threshold_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      ""
+    ],
+    "MapMonsterStunBuildup1": [
+      "map_monsters_hit_damage_stun_multiplier_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterStunBuildup2": [
+      "map_monsters_hit_damage_stun_multiplier_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterStunBuildup3": [
+      "map_monsters_hit_damage_stun_multiplier_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonsterStunBuildup4": [
+      "map_monsters_hit_damage_stun_multiplier_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersBaseSelfCriticalMultiplier1": [
+      "map_monsters_base_self_critical_strike_multiplier_-%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersBaseSelfCriticalMultiplier2": [
+      "map_monsters_base_self_critical_strike_multiplier_-%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersBaseSelfCriticalMultiplier3": [
+      "map_monsters_base_self_critical_strike_multiplier_-%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersBaseSelfCriticalMultiplier4": [
+      "map_monsters_base_self_critical_strike_multiplier_-%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_number_of_magic_and_rare_packs_+%_final_and_rare_monster_modifiers_chance_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersCurseEffectOnSelf1": [
+      "map_monsters_curse_effect_on_self_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersCurseEffectOnSelf2": [
+      "map_monsters_curse_effect_on_self_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersCurseEffectOnSelf3": [
+      "map_monsters_curse_effect_on_self_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersCurseEffectOnSelf4": [
+      "map_monsters_curse_effect_on_self_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersElementalPenetration1": [
+      "map_monsters_penetrate_elemental_resistances_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersElementalPenetration2": [
+      "map_monsters_penetrate_elemental_resistances_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersElementalPenetration3": [
+      "map_monsters_penetrate_elemental_resistances_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapMonstersElementalPenetration4": [
+      "map_monsters_penetrate_elemental_resistances_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerCooldownRecovery1": [
+      "map_player_cooldown_speed_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerCooldownRecovery2": [
+      "map_player_cooldown_speed_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerCooldownRecovery3": [
+      "map_player_cooldown_speed_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerCooldownRecovery4": [
+      "map_player_cooldown_speed_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerElementalWeakness1": [
+      "map_elemental_weakness_curse_zones",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerEnfeeble1": [
+      "map_enfeeble_curse_zones",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerFlaskChargeGain1": [
+      "map_player_charges_gained_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerFlaskChargeGain2": [
+      "map_player_charges_gained_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerFlaskChargeGain3": [
+      "map_player_charges_gained_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerFlaskChargeGain4": [
+      "map_player_charges_gained_+%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerMaximumResists1": [
+      "map_additional_player_maximum_resistances_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerMaximumResists2": [
+      "map_additional_player_maximum_resistances_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerMaximumResists3": [
+      "map_additional_player_maximum_resistances_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerMaximumResists4": [
+      "map_additional_player_maximum_resistances_%",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerRecoveryRate1": [
+      "map_player_life_and_es_recovery_speed_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerRecoveryRate2": [
+      "map_player_life_and_es_recovery_speed_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerRecoveryRate3": [
+      "map_player_life_and_es_recovery_speed_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerRecoveryRate4": [
+      "map_player_life_and_es_recovery_speed_+%_final",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapPlayerTemporalChains1": [
+      "map_temporal_chains_curse_zones",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "",
+      "",
+      ""
+    ],
+    "MapSpreadBurningGround1": [
+      "map_base_ground_fire_damage_to_deal_per_10_seconds",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "ground_fire_art_variation"
+    ],
+    "MapSpreadBurningGround2": [
+      "map_base_ground_fire_damage_to_deal_per_10_seconds",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "ground_fire_art_variation"
+    ],
+    "MapSpreadBurningGround3": [
+      "map_base_ground_fire_damage_to_deal_per_10_seconds",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "ground_fire_art_variation"
+    ],
+    "MapSpreadBurningGround4": [
+      "map_base_ground_fire_damage_to_deal_per_10_seconds",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_monster_potency_+%_final_from_map",
+      "ground_fire_art_variation"
+    ],
+    "MapSpreadChilledGround1": [
+      "map_ground_ice_base_magnitude",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "ground_ice_art_variation"
+    ],
+    "MapSpreadChilledGround2": [
+      "map_ground_ice_base_magnitude",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "ground_ice_art_variation"
+    ],
+    "MapSpreadChilledGround3": [
+      "map_ground_ice_base_magnitude",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "ground_ice_art_variation"
+    ],
+    "MapSpreadChilledGround4": [
+      "map_ground_ice_base_magnitude",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_item_drop_rarity_+%_final_from_map",
+      "ground_ice_art_variation"
+    ],
+    "MapSpreadShockedGround1": [
+      "map_ground_lightning",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "ground_lightning_art_variation"
+    ],
+    "MapSpreadShockedGround2": [
+      "map_ground_lightning",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "ground_lightning_art_variation"
+    ],
+    "MapSpreadShockedGround3": [
+      "map_ground_lightning",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "ground_lightning_art_variation"
+    ],
+    "MapSpreadShockedGround4": [
+      "map_ground_lightning",
+      "map_ground_effect_patches_per_100_tiles",
+      "map_ground_effect_radius",
+      "map_map_item_drop_chance_+%_final_from_map",
+      "map_pack_size_+%_final_from_map",
+      "ground_lightning_art_variation"
+    ]
+  },
+  "affixes": [
+    {
+      "id": "MapMonsterDamageIncrease",
+      "label": "(20-24)% increased Monster Damage / 20% more Waystones found in Area / 25% more Magic and Rare Monsters / Rare Monsters have 25% more chance of Monster Modifiers",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterDamageIncrease1",
+        "MapMonsterDamageIncrease2",
+        "MapMonsterDamageIncrease3",
+        "MapMonsterDamageIncrease4"
+      ]
+    },
+    {
+      "id": "MapMonsterLifeIncrease",
+      "label": "(26-30)% more Monster Life / 15% more Waystones found in Area / 23% more Magic and Rare Monsters / Rare Monsters have 23% more chance of Monster Modifiers",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterLifeIncrease1",
+        "MapMonsterLifeIncrease2",
+        "MapMonsterLifeIncrease3",
+        "MapMonsterLifeIncrease4"
+      ]
+    },
+    {
+      "id": "MapMonstersElementalPenetration",
+      "label": "Monster Damage Penetrates (14-16)% Elemental Resistances / 20% more Waystones found in Area / 16% more Rarity of Items found in this Area",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonstersElementalPenetration1",
+        "MapMonstersElementalPenetration2",
+        "MapMonstersElementalPenetration3",
+        "MapMonstersElementalPenetration4"
+      ]
+    },
+    {
+      "id": "MapMonsterArmourBreak",
+      "label": "Monsters Break Armour equal to (30-45)% of Physical Damage dealt / 10% more Waystones found in Area / 19% more Magic and Rare Monsters / Rare Monsters have 19% more chance of Monster Modifiers",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterArmourBreak1",
+        "MapMonsterArmourBreak2",
+        "MapMonsterArmourBreak3",
+        "MapMonsterArmourBreak4"
+      ]
+    },
+    {
+      "id": "MapMonsterDamageAsChaos",
+      "label": "Monsters deal (20-24)% of Damage as Extra Chaos / 15% more Waystones found in Area / 15% more Rarity of Items found in this Area",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterDamageAsChaos1",
+        "MapMonsterDamageAsChaos2",
+        "MapMonsterDamageAsChaos3",
+        "MapMonsterDamageAsChaos4"
+      ]
+    },
+    {
+      "id": "MapMonsterDamageAsCold",
+      "label": "Monsters deal (20-24)% of Damage as Extra Cold / 15% more Waystones found in Area / 14% more Rarity of Items found in this Area",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterDamageAsCold1",
+        "MapMonsterDamageAsCold2",
+        "MapMonsterDamageAsCold3",
+        "MapMonsterDamageAsCold4"
+      ]
+    },
+    {
+      "id": "MapMonsterDamageAsFire",
+      "label": "Monsters deal (20-24)% of Damage as Extra Fire / 15% more Waystones found in Area / Monsters have 16% increased Effectiveness",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterDamageAsFire1",
+        "MapMonsterDamageAsFire2",
+        "MapMonsterDamageAsFire3",
+        "MapMonsterDamageAsFire4"
+      ]
+    },
+    {
+      "id": "MapMonsterDamageAsLightning",
+      "label": "Monsters deal (20-24)% of Damage as Extra Lightning / 15% more Waystones found in Area / 8% more Pack size",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterDamageAsLightning1",
+        "MapMonsterDamageAsLightning2",
+        "MapMonsterDamageAsLightning3",
+        "MapMonsterDamageAsLightning4"
+      ]
+    },
+    {
+      "id": "MapMonsterSpeedIncrease",
+      "label": "Monsters have (10-15)% increased Attack, Cast and Movement Speed / 25% more Waystones found in Area / 9% more Pack size",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterSpeedIncrease3",
+        "MapMonsterSpeedIncrease4"
+      ]
+    },
+    {
+      "id": "MapMonsterStunBuildup",
+      "label": "Monsters have (100-110)% increased Stun Buildup / 15% more Waystones found in Area / Monsters have 13% more Effectiveness",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterStunBuildup1",
+        "MapMonsterStunBuildup2",
+        "MapMonsterStunBuildup3",
+        "MapMonsterStunBuildup4"
+      ]
+    },
+    {
+      "id": "MapMonsterBleeding",
+      "label": "Monsters have (20-25)% chance to inflict Bleeding on Hit / 10% more Waystones found in Area / Monsters have 13% more Effectiveness",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterBleeding1",
+        "MapMonsterBleeding2",
+        "MapMonsterBleeding3",
+        "MapMonsterBleeding4"
+      ]
+    },
+    {
+      "id": "MapMonsterCritIncrease",
+      "label": "Monsters have (260-300)% increased Critical Hit Chance / Monsters have +(26-30)% Critical Damage Bonus / 15% more Waystones found in Area / 9% more Pack size",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterCritIncrease1",
+        "MapMonsterCritIncrease2",
+        "MapMonsterCritIncrease3",
+        "MapMonsterCritIncrease4"
+      ]
+    },
+    {
+      "id": "MapMonsterPoisoning",
+      "label": "Monsters have (34-40)% chance to Poison on Hit / 10% more Waystones found in Area / 7% more Pack size",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterPoisoning1",
+        "MapMonsterPoisoning2",
+        "MapMonsterPoisoning3",
+        "MapMonsterPoisoning4"
+      ]
+    },
+    {
+      "id": "MapMonsterAccuracy",
+      "label": "Monsters have (40-50)% increased Accuracy Rating / 10% more Waystones found in Area / 7% more Pack size",
+      "category": "Prefix",
+      "modIds": [
+        "MapMonsterAccuracy1",
+        "MapMonsterAccuracy2",
+        "MapMonsterAccuracy3",
+        "MapMonsterAccuracy4"
+      ]
+    },
+    {
+      "id": "MapMonstersCurseEffectOnSelf",
+      "label": "(50-40)% less effect of Curses on Monsters / 10% more Waystones found in Area / 10% more Rarity of Items found in this Area",
+      "category": "Suffix",
+      "modIds": [
+        "MapMonstersCurseEffectOnSelf1",
+        "MapMonstersCurseEffectOnSelf2",
+        "MapMonstersCurseEffectOnSelf3",
+        "MapMonstersCurseEffectOnSelf4"
+      ]
+    },
+    {
+      "id": "MapMonsterElementalResistances",
+      "label": "+(35-40)% Monster Elemental Resistances / 10% more Waystones found in Area / 14% more Rarity of Items found in this Area",
+      "category": "Suffix",
+      "modIds": [
+        "MapMonsterElementalResistances1",
+        "MapMonsterElementalResistances2",
+        "MapMonsterElementalResistances3",
+        "MapMonsterElementalResistances4"
+      ]
+    },
+    {
+      "id": "MapPlayerMaximumResists",
+      "label": "-(10-8)% maximum Player Resistances / 25% more Waystones found in Area / 10% more Pack size",
+      "category": "Suffix",
+      "modIds": [
+        "MapPlayerMaximumResists1",
+        "MapPlayerMaximumResists2",
+        "MapPlayerMaximumResists3",
+        "MapPlayerMaximumResists4"
+      ]
+    },
+    {
+      "id": "MapSpreadChilledGround",
+      "label": "Area has patches of Chilled Ground / 15% more Waystones found in Area / 12% more Rarity of Items found in this Area",
+      "category": "Suffix",
+      "modIds": [
+        "MapSpreadChilledGround1",
+        "MapSpreadChilledGround2",
+        "MapSpreadChilledGround3",
+        "MapSpreadChilledGround4"
+      ]
+    },
+    {
+      "id": "MapSpreadBurningGround",
+      "label": "Area has patches of Ignited Ground / 15% more Waystones found in Area / Monsters have 15% more Effectiveness",
+      "category": "Suffix",
+      "modIds": [
+        "MapSpreadBurningGround1",
+        "MapSpreadBurningGround2",
+        "MapSpreadBurningGround3",
+        "MapSpreadBurningGround4"
+      ]
+    },
+    {
+      "id": "MapSpreadShockedGround",
+      "label": "Area has patches of Shocked Ground / 15% more Waystones found in Area / 7% more Pack size",
+      "category": "Suffix",
+      "modIds": [
+        "MapSpreadShockedGround1",
+        "MapSpreadShockedGround2",
+        "MapSpreadShockedGround3",
+        "MapSpreadShockedGround4"
+      ]
+    },
+    {
+      "id": "MapMonsterElementAilmentChance",
+      "label": "Monster have (120-130)% increased Elemental Ailment Application / 15% more Waystones found in Area / 11% more Rarity of Items found in this Area",
+      "category": "Suffix",
+      "modIds": [
+        "MapMonsterElementAilmentChance1",
+        "MapMonsterElementAilmentChance2",
+        "MapMonsterElementAilmentChance3",
+        "MapMonsterElementAilmentChance4"
+      ]
+    },
+    {
+      "id": "MapMonsterArmoured",
+      "label": "Monsters are Armoured / 15% more Waystones found in Area / 18% more Magic and Rare Monsters / Rare Monsters have 18% more chance of Monster Modifiers",
+      "category": "Suffix",
+      "modIds": [
+        "MapMonsterArmoured1"
+      ]
+    },
+    {
+      "id": "MapMonsterEvasive",
+      "label": "Monsters are Evasive / 15% more Waystones found in Area / 6% more Pack size",
+      "category": "Suffix",
+      "modIds": [
+        "MapMonsterEvasive1"
+      ]
+    },
+    {
+      "id": "MapMonsterEnergyShield",
+      "label": "Monsters gain (12-25)% of maximum Life as Extra maximum Energy Shield / 15% more Waystones found in Area / 13% more Rarity of Items found in this Area",
+      "category": "Suffix",
+      "modIds": [
+        "MapMonsterEnergyShield1"
+      ]
+    },
+    {
+      "id": "MapMonsterStunAilmentThreshold",
+      "label": "Monsters have (70-79)% increased Stun Threshold / Monsters have (70-79)% increased Ailment Threshold / 10% more Waystones found in Area / Monsters have 13% more Effectiveness",
+      "category": "Suffix",
+      "modIds": [
+        "MapMonsterStunAilmentThreshold1",
+        "MapMonsterStunAilmentThreshold2",
+        "MapMonsterStunAilmentThreshold3",
+        "MapMonsterStunAilmentThreshold4"
+      ]
+    },
+    {
+      "id": "MapMonstersBaseSelfCriticalMultiplier",
+      "label": "Monsters take (26-30)% reduced Extra Damage from Critical Hits / 10% more Waystones found in Area / 18% more Magic and Rare Monsters / Rare Monsters have 18% more chance of Monster Modifiers",
+      "category": "Suffix",
+      "modIds": [
+        "MapMonstersBaseSelfCriticalMultiplier1",
+        "MapMonstersBaseSelfCriticalMultiplier2",
+        "MapMonstersBaseSelfCriticalMultiplier3",
+        "MapMonstersBaseSelfCriticalMultiplier4"
+      ]
+    },
+    {
+      "id": "MapPlayerElementalWeakness",
+      "label": "Players are periodically Cursed with Elemental Weakness / 20% more Waystones found in Area / 13% more Rarity of Items found in this Area",
+      "category": "Suffix",
+      "modIds": [
+        "MapPlayerElementalWeakness1"
+      ]
+    },
+    {
+      "id": "MapPlayerEnfeeble",
+      "label": "Players are periodically Cursed with Enfeeble / 20% more Waystones found in Area / Monsters have 16% more Effectiveness",
+      "category": "Suffix",
+      "modIds": [
+        "MapPlayerEnfeeble1"
+      ]
+    },
+    {
+      "id": "MapPlayerTemporalChains",
+      "label": "Players are periodically Cursed with Temporal Chains / 20% more Waystones found in Area / 8% more Pack size",
+      "category": "Suffix",
+      "modIds": [
+        "MapPlayerTemporalChains1"
+      ]
+    },
+    {
+      "id": "MapPlayerFlaskChargeGain",
+      "label": "Players gain (35-30)% reduced Flask Charges / 15% more Waystones found in Area / 7% more Pack size",
+      "category": "Suffix",
+      "modIds": [
+        "MapPlayerFlaskChargeGain1",
+        "MapPlayerFlaskChargeGain2",
+        "MapPlayerFlaskChargeGain3",
+        "MapPlayerFlaskChargeGain4"
+      ]
+    },
+    {
+      "id": "MapPlayerCooldownRecovery",
+      "label": "Players have (30-25)% less Cooldown Recovery Rate / 15% more Waystones found in Area / 12% more Rarity of Items found in this Area",
+      "category": "Suffix",
+      "modIds": [
+        "MapPlayerCooldownRecovery1",
+        "MapPlayerCooldownRecovery2",
+        "MapPlayerCooldownRecovery3",
+        "MapPlayerCooldownRecovery4"
+      ]
+    },
+    {
+      "id": "MapPlayerRecoveryRate",
+      "label": "Players have (40-36)% less Recovery Rate of Life and Energy Shield / 20% more Waystones found in Area / 15% more Rarity of Items found in this Area",
+      "category": "Suffix",
+      "modIds": [
+        "MapPlayerRecoveryRate1",
+        "MapPlayerRecoveryRate2",
+        "MapPlayerRecoveryRate3",
+        "MapPlayerRecoveryRate4"
+      ]
+    }
+  ],
+  "validation": {
+    "waystoneAffixFamilies": 32,
+    "waystoneModIds": 108,
+    "trackedGeneratedStatMods": 108,
+    "sourceRowsValidated": 108,
+    "sourceRowsMissing": 0,
+    "statOrderMismatches": 0
+  }
+}
