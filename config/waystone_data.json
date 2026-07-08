@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-06-25T02:12:31Z",
-  "source": "bundled MapModHelper waystone data",
+  "source": "Waystone Helper bundled waystone data",
   "notes": [
     "Runtime plugin uses this bundled file and does not require any external data folders.",
     "This file is updated in new plugin builds when waystone information changes."
