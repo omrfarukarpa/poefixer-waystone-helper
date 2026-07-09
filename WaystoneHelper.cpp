@@ -13,13 +13,14 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-inline constexpr const char* kWaystoneHelperVersion    = "1.2.0";
+inline constexpr const char* kWaystoneHelperVersion    = "1.2.1";
 inline constexpr const char* kWaystoneHelperMaintainer = "Omer Faruk ARPA";
 
 using WaystoneHelperConfig::Settings;
@@ -134,6 +135,7 @@ private:
     std::chrono::steady_clock::time_point m_lastScan{};
 
     std::unordered_map<std::string, std::string> m_affixSearch;
+    std::unordered_map<std::string, std::string> m_minBuf;
 
     std::uintptr_t m_debugAddr = 0;
     std::string m_debugName;
@@ -209,6 +211,20 @@ private:
                           ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar);
     }
 
+    void DrawMinInput(const char* id, const char* label, int* v, int maxV) {
+        std::string& buf = m_minBuf[id];
+        if (buf.size() != 16) { buf.assign(16, '\0'); std::snprintf(buf.data(), 16, "%d", *v); }
+        ImGui::PushID(id);
+        ImGui::SetNextItemWidth(70.f);
+        if (ImGui::InputText(label, buf.data(), 16, ImGuiInputTextFlags_CharsDecimal)) {
+            const int nv = buf[0] ? std::atoi(buf.data()) : 0;
+            *v = std::clamp(nv, 0, maxV);
+        }
+        if (!ImGui::IsItemActive())
+            std::snprintf(buf.data(), 16, "%d", *v);
+        ImGui::PopID();
+    }
+
     static bool StringSelected(const std::vector<std::string>& v, const std::string& id) {
         for (const auto& s : v) if (s == id) return true;
         return false;
@@ -249,11 +265,8 @@ private:
         ColorEdit("##col", color);
         ImGui::SameLine();
         int* mn = m_settings.StatMinPtr(statId);
-        if (mn) {
-            ImGui::SetNextItemWidth(64.f);
-            if (ImGui::InputInt("min >=%", mn, 0, 0))
-                *mn = std::clamp(*mn, 0, WaystoneHelperConfig::kStatThresholdMax);
-        }
+        if (mn)
+            DrawMinInput(statId, "min >=%", mn, WaystoneHelperConfig::kStatThresholdMax);
         ImGui::PopID();
     }
 
@@ -407,10 +420,8 @@ private:
         std::snprintf(tac, sizeof(tac), "Require target affix count (%d+)",
                       m_settings.targetAffixCount);
         ImGui::Checkbox(tac, &m_settings.borderRequireAffixCount);
-        ImGui::SetNextItemWidth(90.f);
-        if (ImGui::InputInt("Min tier (0=off)", &m_settings.borderMinTier, 0, 0))
-            m_settings.borderMinTier = std::clamp(m_settings.borderMinTier, 0,
-                                                  WaystoneHelperConfig::kMinTierMax);
+        DrawMinInput("bordertier", "Min tier (0=off)", &m_settings.borderMinTier,
+                     WaystoneHelperConfig::kMinTierMax);
     }
 
     void DrawDebugSettings() {
