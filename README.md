@@ -24,8 +24,9 @@ Unofficial third-party game tool. Maintainer: Ömer Faruk ARPA.
   a group matches when at least *N* of its selected affixes are present, and draws a
   colored `matched/selected` badge.
 - **Custom border rules**: outline a map when enough of a rule's conditions match. A
-  condition can be the target affix count, a selected map stat, or a selected affix
-  group. The first matching rule sets the border color.
+  condition can be a minimum affix count, a minimum tier, a map stat with a minimum
+  value (e.g. Item Rarity ≥ 30, Monster Effectiveness ≥ 20), or a selected affix group.
+  The first matching rule sets the border color.
 - **Hover breakdown panel**: hover a waystone to see exactly which stats, groups and
   rules matched.
 

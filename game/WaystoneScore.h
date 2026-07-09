@@ -95,8 +95,7 @@ inline std::vector<GroupMatch> EvaluateGroups(const WaystoneHelperConfig::Settin
 
 inline std::vector<RuleMatch> EvaluateBorderRules(
     const WaystoneHelperConfig::Settings& s, const WaystoneData& data,
-    const ParsedWaystone& t, bool hasTargetAffixCount,
-    const std::vector<GroupMatch>& groupMatches) {
+    const ParsedWaystone& t, const std::vector<GroupMatch>& groupMatches) {
     std::vector<RuleMatch> out;
     for (const auto& r : s.borderRules) {
         if (!r.enabled) continue;
@@ -104,28 +103,46 @@ inline std::vector<RuleMatch> EvaluateBorderRules(
         rm.name = r.name;
         CopyColor(rm.color, r.color);
 
-        if (r.requireTargetAffixCount) {
+        if (r.minAffixCount > 0) {
             ++rm.selected;
-            if (hasTargetAffixCount) {
+            if (t.affixCount >= r.minAffixCount) {
                 ++rm.matched;
                 RuleConditionMatch c;
-                c.label = "Affix count " + std::to_string(s.targetAffixCount) + "+";
+                c.label = std::to_string(t.affixCount) + "/"
+                          + std::to_string(r.minAffixCount) + " affixes";
                 CopyColor(c.color, s.affixCountBadgeColor);
                 rm.conditions.push_back(std::move(c));
             }
         }
 
-        for (const auto& statId : r.selectedGeneratedStatIds) {
-            if (!data.IsTrackedStat(statId)) continue;
+        if (r.minTier > 0) {
             ++rm.selected;
-            if (t.presentStatIds.count(statId)) {
+            if (t.tier >= r.minTier) {
                 ++rm.matched;
                 RuleConditionMatch c;
-                c.label = data.BadgeLabelFor(statId);
-                auto vIt = t.statValues.find(statId);
-                if (vIt != t.statValues.end() && vIt->second > 0)
-                    c.label += std::to_string(vIt->second);
-                CopyColor(c.color, s.StatColor(statId));
+                c.label = "T" + std::to_string(t.tier) + " (>=T"
+                          + std::to_string(r.minTier) + ")";
+                CopyColor(c.color, s.affixCountBadgeColor);
+                rm.conditions.push_back(std::move(c));
+            }
+        }
+
+        for (const auto& sc : r.statConditions) {
+            if (!data.IsTrackedStat(sc.statId)) continue;
+            ++rm.selected;
+            int val = 0;
+            auto vIt = t.statValues.find(sc.statId);
+            if (vIt != t.statValues.end()) val = vIt->second;
+            const bool ok = sc.minValue <= 0
+                ? t.presentStatIds.count(sc.statId) > 0
+                : val >= sc.minValue;
+            if (ok) {
+                ++rm.matched;
+                RuleConditionMatch c;
+                c.label = data.BadgeLabelFor(sc.statId);
+                if (val > 0) c.label += std::to_string(val);
+                if (sc.minValue > 0) c.label += ">=" + std::to_string(sc.minValue);
+                CopyColor(c.color, s.StatColor(sc.statId));
                 rm.conditions.push_back(std::move(c));
             }
         }
@@ -179,8 +196,7 @@ inline Score Evaluate(const WaystoneHelperConfig::Settings& s, const WaystoneDat
         e.affixGroupBadges = e.trackedGroupMatches;
 
     if (s.enableBorderRules)
-        e.borderRules = EvaluateBorderRules(s, data, t, e.hasTargetAffixCount,
-                                            e.trackedGroupMatches);
+        e.borderRules = EvaluateBorderRules(s, data, t, e.trackedGroupMatches);
 
     e.matched = e.hasAffixCountBadge || !e.importantStats.empty()
                 || !e.affixGroupBadges.empty() || e.HasBorder();

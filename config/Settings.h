@@ -21,6 +21,8 @@ inline constexpr float kBadgeScaleMin      = 0.5f;
 inline constexpr float kBadgeScaleMax      = 1.8f;
 inline constexpr int   kMinMatchedAffixMax = 8;
 inline constexpr int   kMinMatchesMax      = 16;
+inline constexpr int   kMinTierMax         = 16;
+inline constexpr int   kStatThresholdMax   = 1000;
 inline constexpr std::size_t kMaxNameLen   = 95;
 
 inline void ClampColor(float c[4]) {
@@ -64,14 +66,20 @@ struct AffixGroup {
     std::vector<std::string> selectedAffixIds;
 };
 
+struct StatThreshold {
+    std::string statId;
+    int minValue = 0;
+};
+
 struct BorderRule {
     std::string id;
     std::string name = "New Border Rule";
     bool  enabled = true;
-    bool  requireTargetAffixCount = false;
+    int   minAffixCount = 0;
+    int   minTier = 0;
     int   minMatches = 1;
     float color[4] = {0.0f, 0.749f, 1.0f, 1.0f};
-    std::vector<std::string> selectedGeneratedStatIds;
+    std::vector<StatThreshold> statConditions;
     std::vector<std::string> selectedAffixGroupIds;
 };
 
@@ -299,10 +307,14 @@ struct Settings {
                 e["id"] = r.id;
                 e["name"] = r.name;
                 e["enabled"] = r.enabled;
-                e["require_target_affix_count"] = r.requireTargetAffixCount;
+                e["min_affix_count"] = r.minAffixCount;
+                e["min_tier"] = r.minTier;
                 e["min_matches"] = r.minMatches;
                 e["color"] = ColorToJson(r.color);
-                e["selected_generated_stat_ids"] = r.selectedGeneratedStatIds;
+                nlohmann::json sc = nlohmann::json::array();
+                for (const auto& t : r.statConditions)
+                    sc.push_back(nlohmann::json{{"stat", t.statId}, {"min", t.minValue}});
+                e["stat_conditions"] = std::move(sc);
                 e["selected_affix_group_ids"] = r.selectedAffixGroupIds;
                 barr.push_back(std::move(e));
             }
@@ -345,11 +357,24 @@ private:
             r.name = e.value("name", std::string("New Border Rule"));
             if (r.name.size() > kMaxNameLen) r.name.resize(kMaxNameLen);
             r.enabled = e.value("enabled", true);
-            r.requireTargetAffixCount = e.value("require_target_affix_count", false);
+            r.minAffixCount = std::clamp(e.value("min_affix_count", 0), 0, kTargetAffixMax);
+            if (r.minAffixCount == 0 && e.value("require_target_affix_count", false))
+                r.minAffixCount = targetAffixCount;
+            r.minTier = std::clamp(e.value("min_tier", 0), 0, kMinTierMax);
             r.minMatches = std::clamp(e.value("min_matches", 1), 1, kMinMatchesMax);
             ColorFromJson(e.value("color", nlohmann::json()), r.color);
-            r.selectedGeneratedStatIds =
-                StringVecFromJson(e.value("selected_generated_stat_ids", nlohmann::json()));
+            if (e.contains("stat_conditions") && e["stat_conditions"].is_array()) {
+                for (const auto& t : e["stat_conditions"]) {
+                    if (!t.is_object() || !t.contains("stat") || !t["stat"].is_string()) continue;
+                    StatThreshold st;
+                    st.statId = t["stat"].get<std::string>();
+                    st.minValue = std::clamp(t.value("min", 0), 0, kStatThresholdMax);
+                    if (!st.statId.empty()) r.statConditions.push_back(std::move(st));
+                }
+            } else {
+                for (auto& id : StringVecFromJson(e.value("selected_generated_stat_ids", nlohmann::json())))
+                    r.statConditions.push_back(StatThreshold{std::move(id), 0});
+            }
             r.selectedAffixGroupIds =
                 StringVecFromJson(e.value("selected_affix_group_ids", nlohmann::json()));
             borderRules.push_back(std::move(r));

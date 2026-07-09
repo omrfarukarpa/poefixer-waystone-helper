@@ -19,6 +19,7 @@ namespace WaystoneHelper {
 struct ParsedWaystone {
     std::string sourcePath;
     int affixCount = 0;
+    int tier = 0;
     int rarity = 0;
     bool identified = true;
     std::unordered_set<std::string> matchKeys;
@@ -133,6 +134,7 @@ private:
                          const PluginSDK::InventoryItem& item, bool readMods) {
         ParsedWaystone p;
         p.sourcePath = item.Path;
+        p.tier = ParseWaystoneTier(item.Path);
         p.rarity = item.Rarity;
         p.identified = item.IsIdentified;
 

@@ -19,7 +19,7 @@
 #include <unordered_map>
 #include <vector>
 
-inline constexpr const char* kWaystoneHelperVersion    = "1.0.0";
+inline constexpr const char* kWaystoneHelperVersion    = "1.1.0";
 inline constexpr const char* kWaystoneHelperMaintainer = "Omer Faruk ARPA";
 
 using WaystoneHelperConfig::Settings;
@@ -413,8 +413,9 @@ private:
         auto& r = m_settings.borderRules[index];
         ImGui::PushID(r.id.c_str());
 
-        const int sel = (r.requireTargetAffixCount ? 1 : 0)
-                        + static_cast<int>(r.selectedGeneratedStatIds.size())
+        const int sel = (r.minAffixCount > 0 ? 1 : 0)
+                        + (r.minTier > 0 ? 1 : 0)
+                        + static_cast<int>(r.statConditions.size())
                         + static_cast<int>(r.selectedAffixGroupIds.size());
         char label[128];
         std::snprintf(label, sizeof(label), "%s  [%d conditions]###hdr", r.name.c_str(), sel);
@@ -435,19 +436,48 @@ private:
                 r.minMatches = std::clamp(r.minMatches, 1, WaystoneHelperConfig::kMinMatchesMax);
             ColorEdit("Border color", r.color);
 
-            char tac[48];
-            std::snprintf(tac, sizeof(tac), "Target affix count (%d+)", m_settings.targetAffixCount);
-            ImGui::Checkbox(tac, &r.requireTargetAffixCount);
+            ImGui::SetNextItemWidth(90.f);
+            if (ImGui::InputInt("Min affix count (0=off)", &r.minAffixCount))
+                r.minAffixCount = std::clamp(r.minAffixCount, 0, WaystoneHelperConfig::kTargetAffixMax);
+            ImGui::SetNextItemWidth(90.f);
+            if (ImGui::InputInt("Min tier (0=off)", &r.minTier))
+                r.minTier = std::clamp(r.minTier, 0, WaystoneHelperConfig::kMinTierMax);
 
-            ImGui::TextDisabled("Map stats");
+            ImGui::TextDisabled("Map stats (check to require; set min %%, 0 = just present)");
             ImGui::Indent();
             for (const auto& gstat : m_data.GeneratedStats()) {
+                ImGui::PushID(gstat.statId.c_str());
+                WaystoneHelperConfig::StatThreshold* cond = nullptr;
+                for (auto& sc : r.statConditions)
+                    if (sc.statId == gstat.statId) { cond = &sc; break; }
+                bool on = cond != nullptr;
                 char slabel[96];
                 std::snprintf(slabel, sizeof(slabel), "%s - %s",
                               gstat.badgeLabel.c_str(), gstat.displayName.c_str());
-                bool on = StringSelected(r.selectedGeneratedStatIds, gstat.statId);
-                if (ImGui::Checkbox(slabel, &on))
-                    ToggleString(r.selectedGeneratedStatIds, gstat.statId, on);
+                if (ImGui::Checkbox(slabel, &on)) {
+                    if (on) {
+                        r.statConditions.push_back(
+                            WaystoneHelperConfig::StatThreshold{gstat.statId, 0});
+                    } else {
+                        r.statConditions.erase(
+                            std::remove_if(r.statConditions.begin(), r.statConditions.end(),
+                                [&](const WaystoneHelperConfig::StatThreshold& x) {
+                                    return x.statId == gstat.statId;
+                                }),
+                            r.statConditions.end());
+                    }
+                    cond = nullptr;
+                    for (auto& sc : r.statConditions)
+                        if (sc.statId == gstat.statId) { cond = &sc; break; }
+                }
+                if (cond) {
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(80.f);
+                    if (ImGui::InputInt(">= %", &cond->minValue))
+                        cond->minValue = std::clamp(cond->minValue, 0,
+                                                    WaystoneHelperConfig::kStatThresholdMax);
+                }
+                ImGui::PopID();
             }
             ImGui::Unindent();
 

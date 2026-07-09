@@ -43,4 +43,20 @@ inline bool LooksLikeWaystone(const std::string& path, const std::string& baseTy
     return false;
 }
 
+inline int ParseWaystoneTier(const std::string& path) {
+    const std::string lower = ToLowerCopy(path);
+    const std::string key = "tier";
+    size_t pos = lower.find(key);
+    if (pos == std::string::npos) return 0;
+    pos += key.size();
+    int val = 0;
+    bool any = false;
+    while (pos < lower.size() && std::isdigit(static_cast<unsigned char>(lower[pos]))) {
+        val = val * 10 + (lower[pos] - '0');
+        any = true;
+        ++pos;
+    }
+    return any ? val : 0;
+}
+
 }
