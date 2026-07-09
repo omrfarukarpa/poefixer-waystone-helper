@@ -23,10 +23,10 @@ Unofficial third-party game tool. Maintainer: Ömer Faruk ARPA.
 - **Custom affix groups** (left-side badges): pick any of the waystone affix families;
   a group matches when at least *N* of its selected affixes are present, and draws a
   colored `matched/selected` badge.
-- **Custom border rules**: outline a map when enough of a rule's conditions match. A
-  condition can be a minimum affix count, a minimum tier, a map stat with a minimum
-  value (e.g. Item Rarity ≥ 30, Monster Effectiveness ≥ 20), or a selected affix group.
-  The first matching rule sets the border color.
+- **Border filter**: outline a map (one color) when it meets every condition you set —
+  a minimum value on any map stat (e.g. Item Rarity ≥ 30, Monster Effectiveness ≥ 20),
+  a minimum tier, and/or the target affix count. Set a stat's min right next to its
+  badge toggle; leave it 0 to keep the badge without a border condition.
 - **Hover breakdown panel**: hover a waystone to see exactly which stats, groups and
   rules matched.
 

@@ -30,31 +30,17 @@ struct GroupMatch {
     }
 };
 
-struct RuleConditionMatch {
-    std::string label;
-    float color[4] = {1.f, 1.f, 1.f, 1.f};
-};
-
-struct RuleMatch {
-    std::string name;
-    float color[4] = {1.f, 1.f, 1.f, 1.f};
-    int matched = 0;
-    int selected = 0;
-    std::vector<RuleConditionMatch> conditions;
-};
-
 struct Score {
     bool matched = false;
     int  affixCount = 0;
+    int  tier = 0;
     bool hasTargetAffixCount = false;
     bool hasAffixCountBadge = false;
     std::vector<StatBadge> importantStats;
     std::vector<GroupMatch> affixGroupBadges;
     std::vector<GroupMatch> trackedGroupMatches;
-    std::vector<RuleMatch> borderRules;
-
-    bool HasBorder() const { return !borderRules.empty(); }
-    const float* BorderColor() const { return borderRules.front().color; }
+    bool border = false;
+    std::vector<std::string> borderMet;
 };
 
 inline void CopyColor(float dst[4], const float src[4]) {
@@ -93,86 +79,48 @@ inline std::vector<GroupMatch> EvaluateGroups(const WaystoneHelperConfig::Settin
     return out;
 }
 
-inline std::vector<RuleMatch> EvaluateBorderRules(
-    const WaystoneHelperConfig::Settings& s, const WaystoneData& data,
-    const ParsedWaystone& t, const std::vector<GroupMatch>& groupMatches) {
-    std::vector<RuleMatch> out;
-    for (const auto& r : s.borderRules) {
-        if (!r.enabled) continue;
-        RuleMatch rm;
-        rm.name = r.name;
-        CopyColor(rm.color, r.color);
+inline void EvaluateBorder(const WaystoneHelperConfig::Settings& s, const WaystoneData& data,
+                           const ParsedWaystone& t, Score& e) {
+    int conditions = 0, met = 0;
 
-        if (r.minAffixCount > 0) {
-            ++rm.selected;
-            if (t.affixCount >= r.minAffixCount) {
-                ++rm.matched;
-                RuleConditionMatch c;
-                c.label = std::to_string(t.affixCount) + "/"
-                          + std::to_string(r.minAffixCount) + " affixes";
-                CopyColor(c.color, s.affixCountBadgeColor);
-                rm.conditions.push_back(std::move(c));
-            }
+    if (s.borderRequireAffixCount) {
+        ++conditions;
+        if (t.affixCount >= s.targetAffixCount) {
+            ++met;
+            e.borderMet.push_back(std::to_string(t.affixCount) + "/"
+                                  + std::to_string(s.targetAffixCount) + " affixes");
         }
-
-        if (r.minTier > 0) {
-            ++rm.selected;
-            if (t.tier >= r.minTier) {
-                ++rm.matched;
-                RuleConditionMatch c;
-                c.label = "T" + std::to_string(t.tier) + " (>=T"
-                          + std::to_string(r.minTier) + ")";
-                CopyColor(c.color, s.affixCountBadgeColor);
-                rm.conditions.push_back(std::move(c));
-            }
-        }
-
-        for (const auto& sc : r.statConditions) {
-            if (!data.IsTrackedStat(sc.statId)) continue;
-            ++rm.selected;
-            int val = 0;
-            auto vIt = t.statValues.find(sc.statId);
-            if (vIt != t.statValues.end()) val = vIt->second;
-            const bool ok = sc.minValue <= 0
-                ? t.presentStatIds.count(sc.statId) > 0
-                : val >= sc.minValue;
-            if (ok) {
-                ++rm.matched;
-                RuleConditionMatch c;
-                c.label = data.BadgeLabelFor(sc.statId);
-                if (val > 0) c.label += std::to_string(val);
-                if (sc.minValue > 0) c.label += ">=" + std::to_string(sc.minValue);
-                CopyColor(c.color, s.StatColor(sc.statId));
-                rm.conditions.push_back(std::move(c));
-            }
-        }
-
-        for (const auto& groupId : r.selectedAffixGroupIds) {
-            ++rm.selected;
-            for (const auto& gm : groupMatches) {
-                if (gm.groupId != groupId) continue;
-                ++rm.matched;
-                RuleConditionMatch c;
-                c.label = gm.name + " " + gm.BadgeLabel();
-                CopyColor(c.color, gm.color);
-                rm.conditions.push_back(std::move(c));
-                break;
-            }
-        }
-
-        if (rm.selected == 0) continue;
-        int required = r.minMatches;
-        if (required > rm.selected) required = rm.selected;
-        if (required < 1) required = 1;
-        if (rm.matched >= required) out.push_back(std::move(rm));
     }
-    return out;
+
+    if (s.borderMinTier > 0) {
+        ++conditions;
+        if (t.tier >= s.borderMinTier) {
+            ++met;
+            e.borderMet.push_back("T" + std::to_string(t.tier));
+        }
+    }
+
+    for (const auto& g : data.GeneratedStats()) {
+        const int mn = s.StatMin(g.statId);
+        if (mn <= 0) continue;
+        ++conditions;
+        int val = 0;
+        auto vIt = t.statValues.find(g.statId);
+        if (vIt != t.statValues.end()) val = vIt->second;
+        if (val >= mn) {
+            ++met;
+            e.borderMet.push_back(g.badgeLabel + std::to_string(val) + ">=" + std::to_string(mn));
+        }
+    }
+
+    e.border = conditions > 0 && met == conditions;
 }
 
 inline Score Evaluate(const WaystoneHelperConfig::Settings& s, const WaystoneData& data,
                       const ParsedWaystone& t) {
     Score e;
     e.affixCount = t.affixCount;
+    e.tier = t.tier;
     e.hasTargetAffixCount = t.affixCount >= s.targetAffixCount;
     e.hasAffixCountBadge = s.showAffixCountBadge && e.hasTargetAffixCount;
 
@@ -195,11 +143,11 @@ inline Score Evaluate(const WaystoneHelperConfig::Settings& s, const WaystoneDat
     if (s.showAffixGroupBadges)
         e.affixGroupBadges = e.trackedGroupMatches;
 
-    if (s.enableBorderRules)
-        e.borderRules = EvaluateBorderRules(s, data, t, e.trackedGroupMatches);
+    if (s.borderEnabled)
+        EvaluateBorder(s, data, t, e);
 
     e.matched = e.hasAffixCountBadge || !e.importantStats.empty()
-                || !e.affixGroupBadges.empty() || e.HasBorder();
+                || !e.affixGroupBadges.empty() || e.border;
     return e;
 }
 

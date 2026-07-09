@@ -66,23 +66,6 @@ struct AffixGroup {
     std::vector<std::string> selectedAffixIds;
 };
 
-struct StatThreshold {
-    std::string statId;
-    int minValue = 0;
-};
-
-struct BorderRule {
-    std::string id;
-    std::string name = "New Border Rule";
-    bool  enabled = true;
-    int   minAffixCount = 0;
-    int   minTier = 0;
-    int   minMatches = 1;
-    float color[4] = {0.0f, 0.749f, 1.0f, 1.0f};
-    std::vector<StatThreshold> statConditions;
-    std::vector<std::string> selectedAffixGroupIds;
-};
-
 struct StatAggregateKeys {
     int monsterEffectiveness = 8209;
     int itemRarity = 8206;
@@ -111,11 +94,21 @@ struct Settings {
     bool highlightMonsterRarity = false;
     bool highlightWaystoneDropChance = false;
 
+    int monsterEffectivenessMin = 0;
+    int itemRarityMin = 0;
+    int packSizeMin = 0;
+    int monsterRarityMin = 0;
+    int waystoneDropChanceMin = 0;
+
     bool showAffixCountBadge = true;
 
     bool enableAffixGroups = true;
     bool showAffixGroupBadges = true;
-    bool enableBorderRules = true;
+
+    bool  borderEnabled = true;
+    bool  borderRequireAffixCount = false;
+    int   borderMinTier = 0;
+    float borderColor[4] = {0.20f, 0.90f, 0.35f, 1.0f};
 
     bool hideWhenHovered = true;
     bool showHoverBreakdown = true;
@@ -140,12 +133,29 @@ struct Settings {
     StatAggregateKeys statAggregateKeys;
 
     std::vector<AffixGroup> affixGroups;
-    std::vector<BorderRule> borderRules;
 
     long nextId = 1;
 
     std::string MakeId(const char* prefix) {
         return std::string(prefix) + std::to_string(nextId++);
+    }
+
+    int StatMin(const std::string& statId) const {
+        if (statId == WaystoneHelper::StatIds::MonsterEffectiveness) return monsterEffectivenessMin;
+        if (statId == WaystoneHelper::StatIds::ItemRarity)           return itemRarityMin;
+        if (statId == WaystoneHelper::StatIds::PackSize)             return packSizeMin;
+        if (statId == WaystoneHelper::StatIds::MonsterRarity)        return monsterRarityMin;
+        if (statId == WaystoneHelper::StatIds::WaystoneDropChance)   return waystoneDropChanceMin;
+        return 0;
+    }
+
+    int* StatMinPtr(const std::string& statId) {
+        if (statId == WaystoneHelper::StatIds::MonsterEffectiveness) return &monsterEffectivenessMin;
+        if (statId == WaystoneHelper::StatIds::ItemRarity)           return &itemRarityMin;
+        if (statId == WaystoneHelper::StatIds::PackSize)             return &packSizeMin;
+        if (statId == WaystoneHelper::StatIds::MonsterRarity)        return &monsterRarityMin;
+        if (statId == WaystoneHelper::StatIds::WaystoneDropChance)   return &waystoneDropChanceMin;
+        return nullptr;
     }
 
     const float* StatColor(const std::string& statId) const {
@@ -196,11 +206,19 @@ struct Settings {
             showAffixCountBadge = j.value("show_affix_count_badge", showAffixCountBadge);
             enableAffixGroups = j.value("enable_affix_groups", enableAffixGroups);
             showAffixGroupBadges = j.value("show_affix_group_badges", showAffixGroupBadges);
-            enableBorderRules = j.value("enable_border_rules", enableBorderRules);
+            borderEnabled = j.value("border_enabled", borderEnabled);
+            borderRequireAffixCount = j.value("border_require_affix_count", borderRequireAffixCount);
+            borderMinTier = std::clamp(j.value("border_min_tier", borderMinTier), 0, kMinTierMax);
             hideWhenHovered = j.value("hide_when_hovered", hideWhenHovered);
             showHoverBreakdown = j.value("show_hover_breakdown", showHoverBreakdown);
             readMods = j.value("read_mods", readMods);
             debugMode = j.value("debug_mode", debugMode);
+
+            monsterEffectivenessMin = std::clamp(j.value("min_monster_effectiveness", 0), 0, kStatThresholdMax);
+            itemRarityMin = std::clamp(j.value("min_item_rarity", 0), 0, kStatThresholdMax);
+            packSizeMin = std::clamp(j.value("min_monster_pack_size", 0), 0, kStatThresholdMax);
+            monsterRarityMin = std::clamp(j.value("min_monster_rarity", 0), 0, kStatThresholdMax);
+            waystoneDropChanceMin = std::clamp(j.value("min_waystone_drop_chance", 0), 0, kStatThresholdMax);
 
             scanIntervalMs = std::clamp(j.value("scan_interval_ms", scanIntervalMs),
                                         kScanIntervalMinMs, kScanIntervalMaxMs);
@@ -221,6 +239,7 @@ struct Settings {
                 ColorFromJson(c.value("waystone_drop_chance", nlohmann::json()), waystoneDropChanceColor);
                 ColorFromJson(c.value("badge_background", nlohmann::json()), badgeBackgroundColor);
                 ColorFromJson(c.value("badge_text", nlohmann::json()), badgeTextColor);
+                ColorFromJson(c.value("border", nlohmann::json()), borderColor);
             }
 
             if (j.contains("stat_aggregate_keys") && j["stat_aggregate_keys"].is_object()) {
@@ -233,7 +252,6 @@ struct Settings {
             }
 
             LoadAffixGroups(j);
-            LoadBorderRules(j);
 
             nextId = j.value("next_id", nextId);
             if (nextId < 1) nextId = 1;
@@ -259,7 +277,9 @@ struct Settings {
             j["show_affix_count_badge"] = showAffixCountBadge;
             j["enable_affix_groups"] = enableAffixGroups;
             j["show_affix_group_badges"] = showAffixGroupBadges;
-            j["enable_border_rules"] = enableBorderRules;
+            j["border_enabled"] = borderEnabled;
+            j["border_require_affix_count"] = borderRequireAffixCount;
+            j["border_min_tier"] = borderMinTier;
             j["hide_when_hovered"] = hideWhenHovered;
             j["show_hover_breakdown"] = showHoverBreakdown;
             j["read_mods"] = readMods;
@@ -268,6 +288,11 @@ struct Settings {
             j["target_affix_count"] = targetAffixCount;
             j["border_thickness"] = borderThickness;
             j["badge_scale"] = badgeScale;
+            j["min_monster_effectiveness"] = monsterEffectivenessMin;
+            j["min_item_rarity"] = itemRarityMin;
+            j["min_monster_pack_size"] = packSizeMin;
+            j["min_monster_rarity"] = monsterRarityMin;
+            j["min_waystone_drop_chance"] = waystoneDropChanceMin;
 
             nlohmann::json colors;
             colors["affix_count"] = ColorToJson(affixCountBadgeColor);
@@ -278,6 +303,7 @@ struct Settings {
             colors["waystone_drop_chance"] = ColorToJson(waystoneDropChanceColor);
             colors["badge_background"] = ColorToJson(badgeBackgroundColor);
             colors["badge_text"] = ColorToJson(badgeTextColor);
+            colors["border"] = ColorToJson(borderColor);
             j["colors"] = std::move(colors);
 
             nlohmann::json keys;
@@ -300,25 +326,6 @@ struct Settings {
                 garr.push_back(std::move(e));
             }
             j["affix_groups"] = std::move(garr);
-
-            nlohmann::json barr = nlohmann::json::array();
-            for (const auto& r : borderRules) {
-                nlohmann::json e;
-                e["id"] = r.id;
-                e["name"] = r.name;
-                e["enabled"] = r.enabled;
-                e["min_affix_count"] = r.minAffixCount;
-                e["min_tier"] = r.minTier;
-                e["min_matches"] = r.minMatches;
-                e["color"] = ColorToJson(r.color);
-                nlohmann::json sc = nlohmann::json::array();
-                for (const auto& t : r.statConditions)
-                    sc.push_back(nlohmann::json{{"stat", t.statId}, {"min", t.minValue}});
-                e["stat_conditions"] = std::move(sc);
-                e["selected_affix_group_ids"] = r.selectedAffixGroupIds;
-                barr.push_back(std::move(e));
-            }
-            j["border_rules"] = std::move(barr);
 
             j["next_id"] = nextId;
 
@@ -347,45 +354,9 @@ private:
         }
     }
 
-    void LoadBorderRules(const nlohmann::json& j) {
-        if (!j.contains("border_rules") || !j["border_rules"].is_array()) return;
-        borderRules.clear();
-        for (const auto& e : j["border_rules"]) {
-            if (!e.is_object()) continue;
-            BorderRule r;
-            r.id = e.value("id", std::string());
-            r.name = e.value("name", std::string("New Border Rule"));
-            if (r.name.size() > kMaxNameLen) r.name.resize(kMaxNameLen);
-            r.enabled = e.value("enabled", true);
-            r.minAffixCount = std::clamp(e.value("min_affix_count", 0), 0, kTargetAffixMax);
-            if (r.minAffixCount == 0 && e.value("require_target_affix_count", false))
-                r.minAffixCount = targetAffixCount;
-            r.minTier = std::clamp(e.value("min_tier", 0), 0, kMinTierMax);
-            r.minMatches = std::clamp(e.value("min_matches", 1), 1, kMinMatchesMax);
-            ColorFromJson(e.value("color", nlohmann::json()), r.color);
-            if (e.contains("stat_conditions") && e["stat_conditions"].is_array()) {
-                for (const auto& t : e["stat_conditions"]) {
-                    if (!t.is_object() || !t.contains("stat") || !t["stat"].is_string()) continue;
-                    StatThreshold st;
-                    st.statId = t["stat"].get<std::string>();
-                    st.minValue = std::clamp(t.value("min", 0), 0, kStatThresholdMax);
-                    if (!st.statId.empty()) r.statConditions.push_back(std::move(st));
-                }
-            } else {
-                for (auto& id : StringVecFromJson(e.value("selected_generated_stat_ids", nlohmann::json())))
-                    r.statConditions.push_back(StatThreshold{std::move(id), 0});
-            }
-            r.selectedAffixGroupIds =
-                StringVecFromJson(e.value("selected_affix_group_ids", nlohmann::json()));
-            borderRules.push_back(std::move(r));
-        }
-    }
-
     void EnsureIds() {
         for (auto& g : affixGroups)
             if (g.id.empty()) g.id = MakeId("g");
-        for (auto& r : borderRules)
-            if (r.id.empty()) r.id = MakeId("r");
     }
 };
 

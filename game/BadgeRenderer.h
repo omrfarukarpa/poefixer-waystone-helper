@@ -88,8 +88,8 @@ inline void RenderWaystone(const ScreenRect& r, const Score& e,
     const float fontSize = BadgeFontSize(s);
     const float lineH = fontSize + 3.f;
 
-    if (e.HasBorder())
-        DrawBorderHighlight(dl, r, e.BorderColor(), s.borderThickness);
+    if (e.border)
+        DrawBorderHighlight(dl, r, s.borderColor, s.borderThickness);
 
     std::vector<ScreenRect> occupied;
 
@@ -172,13 +172,10 @@ inline void DrawHoverBreakdown(const ScreenRect& item, const std::string& title,
             PushLine(lines, "  " + gm.name + " " + gm.BadgeLabel(), ColF(gm.color), 8.f);
     }
 
-    if (!e.borderRules.empty()) {
-        PushLine(lines, "Border rules", header);
-        for (const auto& rm : e.borderRules) {
-            char buf[96];
-            std::snprintf(buf, sizeof(buf), "  %s %d/%d", rm.name.c_str(), rm.matched, rm.selected);
-            PushLine(lines, buf, ColF(rm.color), 8.f);
-        }
+    if (e.border) {
+        PushLine(lines, "Border match", header);
+        for (const auto& c : e.borderMet)
+            PushLine(lines, "  " + c, ColF(s.borderColor), 8.f);
     }
 
     if (lines.empty()) return;

@@ -19,7 +19,7 @@
 #include <unordered_map>
 #include <vector>
 
-inline constexpr const char* kWaystoneHelperVersion    = "1.1.0";
+inline constexpr const char* kWaystoneHelperVersion    = "1.2.0";
 inline constexpr const char* kWaystoneHelperMaintainer = "Omer Faruk ARPA";
 
 using WaystoneHelperConfig::Settings;
@@ -109,10 +109,10 @@ public:
         }
 
         DrawStatSettings();
+        DrawBorderSettings();
         DrawGeneralDisplaySettings();
         DrawDetectionSettings();
         DrawAffixGroupSettings();
-        DrawBorderRuleSettings();
         DrawDebugSettings();
     }
 
@@ -223,29 +223,37 @@ private:
     }
 
     void DrawStatSettings() {
-        ImGui::SeparatorText("Map stats (top-right badges)");
+        ImGui::SeparatorText("Map stats");
         ImGui::Checkbox("Show selected map-stat badges", &m_settings.highlightImportantAffixes);
-        HelpMarker("Draw a top-right badge for each selected map stat this waystone has. "
-                   "The value is shown when it can be read; otherwise the letter alone.");
+        HelpMarker("Checkbox = show the badge. The 'min' box = require this stat for the "
+                   "border: set e.g. 30 to only border maps with that stat >= 30% "
+                   "(0 = badge only, no border condition). Turn on 'Draw border' below.");
         ImGui::Indent();
-        DrawStatRow("Monster Effectiveness (E)", &m_settings.highlightMonsterEffectiveness,
-                    m_settings.monsterEffectivenessColor);
-        DrawStatRow("Item Rarity (R)", &m_settings.highlightItemRarity,
-                    m_settings.itemRarityColor);
-        DrawStatRow("Monster Pack Size (P)", &m_settings.highlightMonsterPackSize,
-                    m_settings.monsterPackSizeColor);
-        DrawStatRow("Monster Rarity (MR)", &m_settings.highlightMonsterRarity,
-                    m_settings.monsterRarityColor);
-        DrawStatRow("Waystone Drop Chance (W)", &m_settings.highlightWaystoneDropChance,
-                    m_settings.waystoneDropChanceColor);
+        DrawStatRow("Monster Effectiveness (E)", WaystoneHelper::StatIds::MonsterEffectiveness,
+                    &m_settings.highlightMonsterEffectiveness, m_settings.monsterEffectivenessColor);
+        DrawStatRow("Item Rarity (R)", WaystoneHelper::StatIds::ItemRarity,
+                    &m_settings.highlightItemRarity, m_settings.itemRarityColor);
+        DrawStatRow("Monster Pack Size (P)", WaystoneHelper::StatIds::PackSize,
+                    &m_settings.highlightMonsterPackSize, m_settings.monsterPackSizeColor);
+        DrawStatRow("Monster Rarity (MR)", WaystoneHelper::StatIds::MonsterRarity,
+                    &m_settings.highlightMonsterRarity, m_settings.monsterRarityColor);
+        DrawStatRow("Waystone Drop Chance (W)", WaystoneHelper::StatIds::WaystoneDropChance,
+                    &m_settings.highlightWaystoneDropChance, m_settings.waystoneDropChanceColor);
         ImGui::Unindent();
     }
 
-    void DrawStatRow(const char* label, bool* enabled, float color[4]) {
+    void DrawStatRow(const char* label, const char* statId, bool* enabled, float color[4]) {
         ImGui::PushID(label);
         ImGui::Checkbox(label, enabled);
         ImGui::SameLine();
         ColorEdit("##col", color);
+        ImGui::SameLine();
+        int* mn = m_settings.StatMinPtr(statId);
+        if (mn) {
+            ImGui::SetNextItemWidth(64.f);
+            if (ImGui::InputInt("min >=%", mn, 0, 0))
+                *mn = std::clamp(*mn, 0, WaystoneHelperConfig::kStatThresholdMax);
+        }
         ImGui::PopID();
     }
 
@@ -383,124 +391,26 @@ private:
         ImGui::EndChild();
     }
 
-    void DrawBorderRuleSettings() {
-        char header[64];
-        std::snprintf(header, sizeof(header), "Border Rules (%zu)###border_rules",
-                      m_settings.borderRules.size());
-        if (!ImGui::CollapsingHeader(header)) return;
-
-        ImGui::Indent();
-        ImGui::Checkbox("Enable border rules", &m_settings.enableBorderRules);
+    void DrawBorderSettings() {
+        ImGui::SeparatorText("Border");
+        ImGui::Checkbox("Draw border for matching maps", &m_settings.borderEnabled);
+        HelpMarker("A border is drawn when the map meets ALL active conditions below: "
+                   "every map-stat with a 'min' set (above), the min tier, and — if "
+                   "checked — the target affix count. No condition set = no border.");
+        ImGui::SameLine();
+        ColorEdit("Border color", m_settings.borderColor);
         ImGui::SliderInt("Border thickness", &m_settings.borderThickness,
                          WaystoneHelperConfig::kBorderThicknessMin,
                          WaystoneHelperConfig::kBorderThicknessMax);
-        if (ImGui::Button("Add Border Rule")) {
-            WaystoneHelperConfig::BorderRule r;
-            r.id = m_settings.MakeId("r");
-            r.name = "Rule " + std::to_string(m_settings.borderRules.size() + 1);
-            m_settings.borderRules.push_back(std::move(r));
-        }
-        ImGui::TextDisabled("First matching rule controls the outline color. Conditions: "
-                            "target affix count, map stats, affix groups.");
 
-        for (int i = 0; i < static_cast<int>(m_settings.borderRules.size()); ++i)
-            if (DrawBorderRuleEditor(i)) { --i; }
-
-        ImGui::Unindent();
-    }
-
-    bool DrawBorderRuleEditor(int index) {
-        auto& r = m_settings.borderRules[index];
-        ImGui::PushID(r.id.c_str());
-
-        const int sel = (r.minAffixCount > 0 ? 1 : 0)
-                        + (r.minTier > 0 ? 1 : 0)
-                        + static_cast<int>(r.statConditions.size())
-                        + static_cast<int>(r.selectedAffixGroupIds.size());
-        char label[128];
-        std::snprintf(label, sizeof(label), "%s  [%d conditions]###hdr", r.name.c_str(), sel);
-
-        bool deleted = false;
-        if (ImGui::TreeNode(label)) {
-            ImGui::Checkbox("Enabled", &r.enabled);
-            ImGui::SameLine();
-            if (ImGui::SmallButton("Delete")) deleted = true;
-
-            char nameBuf[96];
-            std::snprintf(nameBuf, sizeof(nameBuf), "%s", r.name.c_str());
-            ImGui::SetNextItemWidth(240.f);
-            if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) r.name = nameBuf;
-
-            ImGui::SetNextItemWidth(90.f);
-            if (ImGui::InputInt("Min matched conditions", &r.minMatches))
-                r.minMatches = std::clamp(r.minMatches, 1, WaystoneHelperConfig::kMinMatchesMax);
-            ColorEdit("Border color", r.color);
-
-            ImGui::SetNextItemWidth(90.f);
-            if (ImGui::InputInt("Min affix count (0=off)", &r.minAffixCount))
-                r.minAffixCount = std::clamp(r.minAffixCount, 0, WaystoneHelperConfig::kTargetAffixMax);
-            ImGui::SetNextItemWidth(90.f);
-            if (ImGui::InputInt("Min tier (0=off)", &r.minTier))
-                r.minTier = std::clamp(r.minTier, 0, WaystoneHelperConfig::kMinTierMax);
-
-            ImGui::TextDisabled("Map stats (check to require; set min %%, 0 = just present)");
-            ImGui::Indent();
-            for (const auto& gstat : m_data.GeneratedStats()) {
-                ImGui::PushID(gstat.statId.c_str());
-                WaystoneHelperConfig::StatThreshold* cond = nullptr;
-                for (auto& sc : r.statConditions)
-                    if (sc.statId == gstat.statId) { cond = &sc; break; }
-                bool on = cond != nullptr;
-                char slabel[96];
-                std::snprintf(slabel, sizeof(slabel), "%s - %s",
-                              gstat.badgeLabel.c_str(), gstat.displayName.c_str());
-                if (ImGui::Checkbox(slabel, &on)) {
-                    if (on) {
-                        r.statConditions.push_back(
-                            WaystoneHelperConfig::StatThreshold{gstat.statId, 0});
-                    } else {
-                        r.statConditions.erase(
-                            std::remove_if(r.statConditions.begin(), r.statConditions.end(),
-                                [&](const WaystoneHelperConfig::StatThreshold& x) {
-                                    return x.statId == gstat.statId;
-                                }),
-                            r.statConditions.end());
-                    }
-                    cond = nullptr;
-                    for (auto& sc : r.statConditions)
-                        if (sc.statId == gstat.statId) { cond = &sc; break; }
-                }
-                if (cond) {
-                    ImGui::SameLine();
-                    ImGui::SetNextItemWidth(80.f);
-                    if (ImGui::InputInt(">= %", &cond->minValue))
-                        cond->minValue = std::clamp(cond->minValue, 0,
-                                                    WaystoneHelperConfig::kStatThresholdMax);
-                }
-                ImGui::PopID();
-            }
-            ImGui::Unindent();
-
-            ImGui::TextDisabled("Affix groups");
-            ImGui::Indent();
-            if (m_settings.affixGroups.empty()) {
-                ImGui::TextDisabled("No affix groups yet.");
-            } else {
-                for (const auto& g : m_settings.affixGroups) {
-                    bool on = StringSelected(r.selectedAffixGroupIds, g.id);
-                    ImGui::PushID(g.id.c_str());
-                    if (ImGui::Checkbox(g.name.c_str(), &on))
-                        ToggleString(r.selectedAffixGroupIds, g.id, on);
-                    ImGui::PopID();
-                }
-            }
-            ImGui::Unindent();
-            ImGui::TreePop();
-        }
-
-        ImGui::PopID();
-        if (deleted) m_settings.borderRules.erase(m_settings.borderRules.begin() + index);
-        return deleted;
+        char tac[64];
+        std::snprintf(tac, sizeof(tac), "Require target affix count (%d+)",
+                      m_settings.targetAffixCount);
+        ImGui::Checkbox(tac, &m_settings.borderRequireAffixCount);
+        ImGui::SetNextItemWidth(90.f);
+        if (ImGui::InputInt("Min tier (0=off)", &m_settings.borderMinTier, 0, 0))
+            m_settings.borderMinTier = std::clamp(m_settings.borderMinTier, 0,
+                                                  WaystoneHelperConfig::kMinTierMax);
     }
 
     void DrawDebugSettings() {
