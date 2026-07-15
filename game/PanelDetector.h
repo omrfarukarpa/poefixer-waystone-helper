@@ -2,6 +2,7 @@
 
 #include "sdk/PluginSDK.h"
 
+#include <cstring>
 #include <optional>
 
 namespace WaystoneHelper {
@@ -31,6 +32,10 @@ inline bool ItemOnScreen(const PluginSDK::InventoryItem& item, float displayW, f
     return cx >= 0.f && cy >= 0.f && cx < displayW && cy < displayH;
 }
 
+inline bool IsMainInventoryName(const char* name) {
+    return name && std::strncmp(name, "MainInventory", 13) == 0;
+}
+
 inline bool GridLayoutPlausible(const PluginSDK::Inventory& inv, float displayW) {
     if (inv.TotalBoxesY < 6) return false;
     if (inv.Grid.CellSize > 0.f
@@ -41,12 +46,14 @@ inline bool GridLayoutPlausible(const PluginSDK::Inventory& inv, float displayW)
 
 inline std::optional<ScreenRect> ResolveItemRect(const PluginSDK::Inventory& inv,
                                                  const PluginSDK::InventoryItem& item,
-                                                 float displayW, float displayH) {
+                                                 float displayW, float displayH,
+                                                 bool trustedGrid = false) {
     if (ItemOnScreen(item, displayW, displayH)) {
         return ScreenRect{item.ScreenX, item.ScreenY, item.ScreenW, item.ScreenH};
     }
     if (inv.Grid.Valid && GridOnScreen(inv, displayW, displayH)
-        && inv.Grid.CellSize > 0.f && GridLayoutPlausible(inv, displayW)) {
+        && inv.Grid.CellSize > 0.f
+        && (trustedGrid || GridLayoutPlausible(inv, displayW))) {
         const float cell = inv.Grid.CellSize;
         return ScreenRect{
             inv.Grid.GridScreenX + static_cast<float>(item.SlotX) * cell,

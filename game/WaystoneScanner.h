@@ -21,6 +21,7 @@ struct ParsedWaystone {
     int affixCount = 0;
     int tier = 0;
     int rarity = 0;
+    bool corrupted = false;
     bool identified = true;
     std::unordered_set<std::string> matchKeys;
     std::unordered_set<std::string> presentStatIds;
@@ -55,9 +56,11 @@ public:
         int newParses = 0;
 
         for (const auto& inv : all) {
+            const bool trustedGrid =
+                IsMainInventoryName(ctx->Inventory.GetName(inv.InventoryId));
             for (const auto& item : inv.Items) {
                 if (!LooksLikeWaystone(item.Path, item.BaseTypeName)) continue;
-                auto rect = ResolveItemRect(inv, item, displayW, displayH);
+                auto rect = ResolveItemRect(inv, item, displayW, displayH, trustedGrid);
                 if (!rect) continue;
                 if (item.Address == 0) continue;
                 if (!seenThisScan.insert(item.Address).second) continue;
@@ -136,6 +139,7 @@ private:
         p.sourcePath = item.Path;
         p.tier = ParseWaystoneTier(item.Path);
         p.rarity = item.Rarity;
+        p.corrupted = item.IsCorrupted;
         p.identified = item.IsIdentified;
 
         if (!readMods || item.Address == 0) return p;
@@ -146,6 +150,10 @@ private:
         const auto mods = ctx->Inventory.ReadItemMods(item.Address);
         p.modsRead = mods.Valid;
         p.affixCount = static_cast<int>(mods.ExplicitMods.size());
+        if (mods.Valid) {
+            p.rarity = mods.Rarity;
+            p.corrupted = mods.IsCorrupted;
+        }
 
         for (const auto& m : mods.ExplicitMods) {
             const std::string normId = NormalizeIdentifier(m.Id);
@@ -168,9 +176,11 @@ private:
         const std::string normStat = NormalizeIdentifier(m.StatKey);
         for (const auto& g : data.GeneratedStats()) {
             if (NormalizeIdentifier(g.statId) != normStat) continue;
-            p.presentStatIds.insert(g.statId);
-            int v = static_cast<int>(std::lround(std::fabs(m.Value0)));
-            if (v > 0) Credit(p, g.statId, v);
+            const int v = static_cast<int>(std::lround(m.Value0));
+            if (v > 0) {
+                p.presentStatIds.insert(g.statId);
+                Credit(p, g.statId, v);
+            }
             break;
         }
     }
@@ -182,11 +192,13 @@ private:
         for (std::size_t i = 0; i < statIds->size(); ++i) {
             const std::string& statId = (*statIds)[i];
             if (statId.empty() || !data.IsTrackedStat(statId)) continue;
-            p.presentStatIds.insert(statId);
             int v = 0;
-            if (i == 0) v = static_cast<int>(std::lround(std::fabs(m.Value0)));
-            else if (i == 1) v = static_cast<int>(std::lround(std::fabs(m.Value1)));
-            if (v > 0) Credit(p, statId, v);
+            if (i == 0) v = static_cast<int>(std::lround(m.Value0));
+            else if (i == 1) v = static_cast<int>(std::lround(m.Value1));
+            if (v > 0) {
+                p.presentStatIds.insert(statId);
+                Credit(p, statId, v);
+            }
         }
     }
 
@@ -200,10 +212,9 @@ private:
             if (key == 0) continue;
             for (const auto& pr : agg) {
                 if (pr.first != key) continue;
-                int v = pr.second < 0 ? -pr.second : pr.second;
-                if (v > 0) {
+                if (pr.second > 0) {
                     p.presentStatIds.insert(g.statId);
-                    p.statValues[g.statId] = v;
+                    p.statValues[g.statId] = pr.second;
                 }
                 break;
             }

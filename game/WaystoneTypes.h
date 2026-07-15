@@ -47,16 +47,19 @@ inline int ParseWaystoneTier(const std::string& path) {
     const std::string lower = ToLowerCopy(path);
     const std::string key = "tier";
     size_t pos = lower.find(key);
-    if (pos == std::string::npos) return 0;
-    pos += key.size();
-    int val = 0;
-    bool any = false;
-    while (pos < lower.size() && std::isdigit(static_cast<unsigned char>(lower[pos]))) {
-        val = val * 10 + (lower[pos] - '0');
-        any = true;
-        ++pos;
+    while (pos != std::string::npos) {
+        size_t p = pos + key.size();
+        if (p < lower.size() && std::isdigit(static_cast<unsigned char>(lower[p]))) {
+            int val = 0;
+            while (p < lower.size() && std::isdigit(static_cast<unsigned char>(lower[p]))) {
+                val = val * 10 + (lower[p] - '0');
+                ++p;
+            }
+            return val;
+        }
+        pos = lower.find(key, pos + 1);
     }
-    return any ? val : 0;
+    return 0;
 }
 
 }

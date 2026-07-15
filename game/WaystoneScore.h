@@ -34,14 +34,28 @@ struct Score {
     bool matched = false;
     int  affixCount = 0;
     int  tier = 0;
+    int  rarity = 0;
+    bool corrupted = false;
     bool hasTargetAffixCount = false;
     bool hasAffixCountBadge = false;
     std::vector<StatBadge> importantStats;
     std::vector<GroupMatch> affixGroupBadges;
     std::vector<GroupMatch> trackedGroupMatches;
     bool border = false;
+    float borderColor[4] = {1.f, 1.f, 1.f, 1.f};
+    std::string borderName;
     std::vector<std::string> borderMet;
 };
+
+inline const char* RarityName(int rarity) {
+    switch (rarity) {
+        case 0: return "normal";
+        case 1: return "magic";
+        case 2: return "rare";
+        case 3: return "unique";
+        default: return "?";
+    }
+}
 
 inline void CopyColor(float dst[4], const float src[4]) {
     dst[0] = src[0]; dst[1] = src[1]; dst[2] = src[2]; dst[3] = src[3];
@@ -79,41 +93,62 @@ inline std::vector<GroupMatch> EvaluateGroups(const WaystoneHelperConfig::Settin
     return out;
 }
 
+inline bool RuleHasConditions(const WaystoneHelperConfig::BorderRule& g) {
+    if (g.minTier > 0 || g.minAffixes > 0) return true;
+    if (g.corrupted != WaystoneHelperConfig::kCorruptedAny || g.rarity >= 0) return true;
+    for (const auto& kv : g.statMins)
+        if (kv.second > 0) return true;
+    return false;
+}
+
+inline bool RuleMatches(const WaystoneHelperConfig::BorderRule& g, const WaystoneData& data,
+                        const ParsedWaystone& t, std::vector<std::string>& met) {
+    met.clear();
+
+    for (const auto& gs : data.GeneratedStats()) {
+        auto mIt = g.statMins.find(gs.statId);
+        if (mIt == g.statMins.end() || mIt->second <= 0) continue;
+        int val = 0;
+        auto vIt = t.statValues.find(gs.statId);
+        if (vIt != t.statValues.end()) val = vIt->second;
+        if (val < mIt->second) return false;
+        met.push_back(gs.badgeLabel + std::to_string(val) + ">=" + std::to_string(mIt->second));
+    }
+
+    if (g.minTier > 0) {
+        if (t.tier < g.minTier) return false;
+        met.push_back("T" + std::to_string(t.tier));
+    }
+    if (g.minAffixes > 0) {
+        if (t.affixCount < g.minAffixes) return false;
+        met.push_back(std::to_string(t.affixCount) + " affixes");
+    }
+    if (g.corrupted == WaystoneHelperConfig::kCorruptedOnly) {
+        if (!t.corrupted) return false;
+        met.push_back("corrupted");
+    } else if (g.corrupted == WaystoneHelperConfig::kCorruptedNever) {
+        if (t.corrupted) return false;
+        met.push_back("not corrupted");
+    }
+    if (g.rarity >= 0) {
+        if (t.rarity != g.rarity) return false;
+        met.push_back(RarityName(t.rarity));
+    }
+    return true;
+}
+
 inline void EvaluateBorder(const WaystoneHelperConfig::Settings& s, const WaystoneData& data,
                            const ParsedWaystone& t, Score& e) {
-    int conditions = 0, met = 0;
-
-    if (s.borderRequireAffixCount) {
-        ++conditions;
-        if (t.affixCount >= s.targetAffixCount) {
-            ++met;
-            e.borderMet.push_back(std::to_string(t.affixCount) + "/"
-                                  + std::to_string(s.targetAffixCount) + " affixes");
-        }
+    std::vector<std::string> met;
+    for (const auto& g : s.borderRules) {
+        if (!g.enabled || !RuleHasConditions(g)) continue;
+        if (!RuleMatches(g, data, t, met)) continue;
+        e.border = true;
+        e.borderName = g.name;
+        CopyColor(e.borderColor, g.color);
+        e.borderMet = std::move(met);
+        return;
     }
-
-    if (s.borderMinTier > 0) {
-        ++conditions;
-        if (t.tier >= s.borderMinTier) {
-            ++met;
-            e.borderMet.push_back("T" + std::to_string(t.tier));
-        }
-    }
-
-    for (const auto& g : data.GeneratedStats()) {
-        const int mn = s.StatMin(g.statId);
-        if (mn <= 0) continue;
-        ++conditions;
-        int val = 0;
-        auto vIt = t.statValues.find(g.statId);
-        if (vIt != t.statValues.end()) val = vIt->second;
-        if (val >= mn) {
-            ++met;
-            e.borderMet.push_back(g.badgeLabel + std::to_string(val) + ">=" + std::to_string(mn));
-        }
-    }
-
-    e.border = conditions > 0 && met == conditions;
 }
 
 inline Score Evaluate(const WaystoneHelperConfig::Settings& s, const WaystoneData& data,
@@ -121,6 +156,8 @@ inline Score Evaluate(const WaystoneHelperConfig::Settings& s, const WaystoneDat
     Score e;
     e.affixCount = t.affixCount;
     e.tier = t.tier;
+    e.rarity = t.rarity;
+    e.corrupted = t.corrupted;
     e.hasTargetAffixCount = t.affixCount >= s.targetAffixCount;
     e.hasAffixCountBadge = s.showAffixCountBadge && e.hasTargetAffixCount;
 

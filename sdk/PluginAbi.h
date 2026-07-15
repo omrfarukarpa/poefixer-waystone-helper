@@ -669,6 +669,11 @@ typedef int32_t (*PsdkModVisitorFn)(const ModAbi* mod, PsdkModKind mod_kind, voi
 typedef int32_t (*PsdkBuffVisitorFn)(const BuffAbi* buff, void* userdata);
 typedef int32_t (*PsdkActiveSkillVisitorFn)(const ActiveSkillAbi* s, void* userdata);
 typedef int32_t (*PsdkStatVisitorFn)(int32_t key, int32_t value, PsdkStatSource source_kind, void* userdata);
+// Per-skill evaluated stat visitor (enumerate_skill_stats). set_index groups
+// pairs into the stat sets the skill was evaluated with (0-based, in emission
+// order); stat_id = Stats.dat ROW INDEX + 1 (the game's runtime stat key —
+// same +1 bias as atlas content tokens), ascending within one set.
+typedef int32_t (*PsdkSkillStatVisitorFn)(int32_t set_index, int32_t stat_id, int32_t value, void* userdata);
 typedef int32_t (*PsdkTgtVisitorFn)(const TgtLocationAbi* loc, void* userdata);
 typedef int32_t (*PsdkFlaskVisitorFn)(const FlaskAbi* item, void* userdata);
 typedef int32_t (*PsdkCharmVisitorFn)(const CharmAbi* item, void* userdata);
@@ -1226,12 +1231,27 @@ typedef struct HostAbi {
 
     // Trial of the Sekhemas floor-map data (room graph / choices / content FK
     // rows) + StateMachine flag reads, read host-side via the GameLibrary
-    // SekhemaTrial offsets. Embedded by-value: appending inside
-    // SekhemaServiceAbi is safe ONLY while it is the LAST HostAbi member; the
-    // moment anything is appended after it, the struct is frozen and extensions
-    // must land as new HostAbi tail functions. Append-only tail (2026-07-07,
-    // after atlas).
+    // SekhemaTrial offsets. Embedded by-value: FROZEN since
+    // enumerate_skill_stats was appended after it — extensions must land as
+    // new HostAbi tail functions. Append-only tail (2026-07-07, after atlas).
     SekhemaServiceAbi sekhema;
+
+    // Evaluated per-skill stat sets. skill_details_addr is the
+    // ActiveSkillAbi::skill_details_addr of a skill enumerated THIS frame
+    // (addresses go stale across frames/area changes; a stale address safely
+    // yields no visits). Emits sorted {stat_id, value} pairs grouped by
+    // set_index. Set 0 is the skill's CURRENT-CONTEXT stat set — present on
+    // every skill, persistent, and the source of the in-game skills-panel DPS
+    // line; subsequent sets are the per-part stat sets (summon/command skills
+    // keep their minion stats there). stat_id = Stats.dat row index + 1;
+    // values are raw int32, many x100 fixed-point (runtime ids: 691 aps*100,
+    // 692 dps*100, 695 cps*100, 1982/1983 avg dmg*100, 694 base cast time ms,
+    // 2079 show-average-instead-of-dps flag). The DPS family is computed for
+    // displayed contexts; alt contexts (infusion tabs, weapon swap) are
+    // transient — absence means "not evaluated", not zero. Works for ANY
+    // actor's skills, including minions. Append-only tail (2026-07-09).
+    void (*enumerate_skill_stats)(uintptr_t skill_details_addr,
+                                  PsdkSkillStatVisitorFn cb, void* userdata);
 } HostAbi;
 
 #ifdef __cplusplus

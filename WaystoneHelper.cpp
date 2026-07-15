@@ -20,7 +20,7 @@
 #include <unordered_map>
 #include <vector>
 
-inline constexpr const char* kWaystoneHelperVersion    = "1.2.1";
+inline constexpr const char* kWaystoneHelperVersion    = "1.3.0";
 inline constexpr const char* kWaystoneHelperMaintainer = "Omer Faruk ARPA";
 
 using WaystoneHelperConfig::Settings;
@@ -43,6 +43,7 @@ public:
             ImGui::SetCurrentContext(static_cast<ImGuiContext*>(ctx()->ImGuiContext));
 
         m_settings.Load(DirectoryPath());
+        m_loaded = true;
         m_dataStatus = m_data.Load(DirectoryPath());
         ctx()->Log.Info(("Waystone Helper: " + m_dataStatus).c_str());
         m_lastScan = std::chrono::steady_clock::now()
@@ -91,8 +92,8 @@ public:
     }
 
     void DrawSettings() override {
-        if (ctx()->ImGuiContext)
-            ImGui::SetCurrentContext(static_cast<ImGuiContext*>(ctx()->ImGuiContext));
+        if (!ctx()->ImGuiContext) return;
+        ImGui::SetCurrentContext(static_cast<ImGuiContext*>(ctx()->ImGuiContext));
 
         ImGui::TextDisabled("Waystone Helper v%s  -  by %s",
                             kWaystoneHelperVersion, kWaystoneHelperMaintainer);
@@ -106,7 +107,8 @@ public:
                 "stash, guild stash). The top-left badge shows the explicit affix count "
                 "when it reaches the target; top-right badges show selected map stats "
                 "(E/R/P/MR/W); left-side badges show custom affix-group matches; the "
-                "border color comes from the first matching border rule.");
+                "border color comes from the first matching border group (stat totals, "
+                "tier, affix count, corruption, rarity).");
         }
 
         DrawStatSettings();
@@ -117,7 +119,9 @@ public:
         DrawDebugSettings();
     }
 
-    void SaveSettings() override { m_settings.Save(DirectoryPath()); }
+    void SaveSettings() override {
+        if (m_loaded) m_settings.Save(DirectoryPath());
+    }
 
 private:
     struct DrawItem {
@@ -127,6 +131,7 @@ private:
     };
 
     Settings m_settings;
+    bool m_loaded = false;
     WaystoneHelper::WaystoneData m_data;
     std::string m_dataStatus;
     WaystoneHelper::WaystoneScanner m_scanner;
@@ -241,32 +246,28 @@ private:
     void DrawStatSettings() {
         ImGui::SeparatorText("Map stats");
         ImGui::Checkbox("Show selected map-stat badges", &m_settings.highlightImportantAffixes);
-        HelpMarker("Checkbox = show the badge. The 'min' box = require this stat for the "
-                   "border: set e.g. 30 to only border maps with that stat >= 30% "
-                   "(0 = badge only, no border condition). Turn on 'Draw border' below.");
+        HelpMarker("Checkbox = show a top-right badge with the stat's total value. "
+                   "Borders based on stat totals are configured under 'Border groups' "
+                   "below.");
         ImGui::Indent();
-        DrawStatRow("Monster Effectiveness (E)", WaystoneHelper::StatIds::MonsterEffectiveness,
+        DrawStatRow("Monster Effectiveness (E)",
                     &m_settings.highlightMonsterEffectiveness, m_settings.monsterEffectivenessColor);
-        DrawStatRow("Item Rarity (R)", WaystoneHelper::StatIds::ItemRarity,
+        DrawStatRow("Item Rarity (R)",
                     &m_settings.highlightItemRarity, m_settings.itemRarityColor);
-        DrawStatRow("Monster Pack Size (P)", WaystoneHelper::StatIds::PackSize,
+        DrawStatRow("Monster Pack Size (P)",
                     &m_settings.highlightMonsterPackSize, m_settings.monsterPackSizeColor);
-        DrawStatRow("Monster Rarity (MR)", WaystoneHelper::StatIds::MonsterRarity,
+        DrawStatRow("Monster Rarity (MR)",
                     &m_settings.highlightMonsterRarity, m_settings.monsterRarityColor);
-        DrawStatRow("Waystone Drop Chance (W)", WaystoneHelper::StatIds::WaystoneDropChance,
+        DrawStatRow("Waystone Drop Chance (W)",
                     &m_settings.highlightWaystoneDropChance, m_settings.waystoneDropChanceColor);
         ImGui::Unindent();
     }
 
-    void DrawStatRow(const char* label, const char* statId, bool* enabled, float color[4]) {
+    void DrawStatRow(const char* label, bool* enabled, float color[4]) {
         ImGui::PushID(label);
         ImGui::Checkbox(label, enabled);
         ImGui::SameLine();
         ColorEdit("##col", color);
-        ImGui::SameLine();
-        int* mn = m_settings.StatMinPtr(statId);
-        if (mn)
-            DrawMinInput(statId, "min >=%", mn, WaystoneHelperConfig::kStatThresholdMax);
         ImGui::PopID();
     }
 
@@ -292,7 +293,9 @@ private:
 
     void DrawDetectionSettings() {
         ImGui::SeparatorText("Detection");
-        ImGui::Checkbox("Read item mods (affix count + stats + groups)", &m_settings.readMods);
+        if (ImGui::Checkbox("Read item mods (affix count + stats + groups)", &m_settings.readMods)
+            && !m_settings.readMods)
+            m_scanner.Reset();
         if (m_settings.readMods) {
             ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(230, 190, 90, 255));
             ImGui::TextWrapped(
@@ -375,7 +378,7 @@ private:
         if (ImGui::InputTextWithHint("##affixsearch", "filter affixes...", buf, sizeof(buf)))
             search = buf;
         ImGui::SameLine();
-        if (ImGui::SmallButton("Clear")) g.selectedAffixIds.clear();
+        if (ImGui::SmallButton("Clear selected")) g.selectedAffixIds.clear();
         const std::string lf = WaystoneHelper::ToLowerCopy(search);
 
         ImGui::BeginChild("affixlist", ImVec2(0.f, 200.f), ImGuiChildFlags_Borders);
@@ -405,23 +408,80 @@ private:
     }
 
     void DrawBorderSettings() {
-        ImGui::SeparatorText("Border");
-        ImGui::Checkbox("Draw border for matching maps", &m_settings.borderEnabled);
-        HelpMarker("A border is drawn when the map meets ALL active conditions below: "
-                   "every map-stat with a 'min' set (above), the min tier, and — if "
-                   "checked — the target affix count. No condition set = no border.");
-        ImGui::SameLine();
-        ColorEdit("Border color", m_settings.borderColor);
+        ImGui::SeparatorText("Border groups");
+        ImGui::Checkbox("Draw borders", &m_settings.borderEnabled);
+        HelpMarker("Each group draws its own border color on waystones that meet ALL of "
+                   "its conditions: stat totals (e.g. Item Rarity >= 60), tier, affix "
+                   "count, corruption and rarity. Conditions left at 0/Any are ignored. "
+                   "The FIRST matching group in the list wins; a group with no "
+                   "conditions never matches.");
         ImGui::SliderInt("Border thickness", &m_settings.borderThickness,
                          WaystoneHelperConfig::kBorderThicknessMin,
                          WaystoneHelperConfig::kBorderThicknessMax);
 
-        char tac[64];
-        std::snprintf(tac, sizeof(tac), "Require target affix count (%d+)",
-                      m_settings.targetAffixCount);
-        ImGui::Checkbox(tac, &m_settings.borderRequireAffixCount);
-        DrawMinInput("bordertier", "Min tier (0=off)", &m_settings.borderMinTier,
-                     WaystoneHelperConfig::kMinTierMax);
+        if (ImGui::Button("Add Border Group")) {
+            WaystoneHelperConfig::BorderRule g;
+            g.id = m_settings.MakeId("b");
+            g.name = "Group " + std::to_string(m_settings.borderRules.size() + 1);
+            m_settings.borderRules.push_back(std::move(g));
+        }
+        if (m_settings.borderRules.empty())
+            ImGui::TextDisabled("No groups yet. Example: Item Rarity >= 60 with a red "
+                                "border, Waystone Drop Chance >= 120 with a green one.");
+
+        for (int i = 0; i < static_cast<int>(m_settings.borderRules.size()); ++i)
+            if (DrawBorderRuleEditor(i)) { --i; }
+    }
+
+    bool DrawBorderRuleEditor(int index) {
+        auto& g = m_settings.borderRules[index];
+        ImGui::PushID(g.id.c_str());
+
+        char label[160];
+        std::snprintf(label, sizeof(label), "%s%s###bhdr", g.name.c_str(),
+                      g.enabled ? "" : "  (off)");
+
+        bool deleted = false;
+        if (ImGui::TreeNode(label)) {
+            ImGui::Checkbox("Enabled", &g.enabled);
+            ImGui::SameLine();
+            if (ImGui::SmallButton("Delete")) deleted = true;
+
+            char nameBuf[96];
+            std::snprintf(nameBuf, sizeof(nameBuf), "%s", g.name.c_str());
+            ImGui::SetNextItemWidth(240.f);
+            if (ImGui::InputText("Name", nameBuf, sizeof(nameBuf))) g.name = nameBuf;
+
+            ColorEdit("Border color", g.color);
+
+            ImGui::TextDisabled("Stat totals (0 = ignore):");
+            for (const auto& gs : m_data.GeneratedStats()) {
+                const std::string key = g.id + ":" + gs.statId;
+                const std::string lbl = gs.displayName + " >=";
+                DrawMinInput(key.c_str(), lbl.c_str(), &g.statMins[gs.statId],
+                             WaystoneHelperConfig::kStatThresholdMax);
+            }
+
+            DrawMinInput((g.id + ":tier").c_str(), "Min tier (0 = ignore)",
+                         &g.minTier, WaystoneHelperConfig::kMinTierMax);
+            DrawMinInput((g.id + ":affixes").c_str(), "Min affixes (0 = ignore)",
+                         &g.minAffixes, WaystoneHelperConfig::kTargetAffixMax);
+
+            static const char* kCorruption[] = {"Any", "Corrupted only", "Not corrupted"};
+            ImGui::SetNextItemWidth(160.f);
+            ImGui::Combo("Corruption", &g.corrupted, kCorruption, 3);
+
+            static const char* kRarity[] = {"Any", "Normal", "Magic", "Rare", "Unique"};
+            int rarityIdx = std::clamp(g.rarity + 1, 0, 4);
+            ImGui::SetNextItemWidth(160.f);
+            if (ImGui::Combo("Rarity", &rarityIdx, kRarity, 5)) g.rarity = rarityIdx - 1;
+
+            ImGui::TreePop();
+        }
+
+        ImGui::PopID();
+        if (deleted) m_settings.borderRules.erase(m_settings.borderRules.begin() + index);
+        return deleted;
     }
 
     void DrawDebugSettings() {

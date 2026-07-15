@@ -89,7 +89,7 @@ inline void RenderWaystone(const ScreenRect& r, const Score& e,
     const float lineH = fontSize + 3.f;
 
     if (e.border)
-        DrawBorderHighlight(dl, r, s.borderColor, s.borderThickness);
+        DrawBorderHighlight(dl, r, e.borderColor, s.borderThickness);
 
     std::vector<ScreenRect> occupied;
 
@@ -157,6 +157,14 @@ inline void DrawHoverBreakdown(const ScreenRect& item, const std::string& title,
         PushLine(lines, buf, e.hasTargetAffixCount ? ColF(s.affixCountBadgeColor) : muted);
     }
 
+    {
+        std::string info = "T" + std::to_string(e.tier);
+        info += ", ";
+        info += RarityName(e.rarity);
+        if (e.corrupted) info += ", corrupted";
+        PushLine(lines, info, muted);
+    }
+
     if (!e.importantStats.empty()) {
         PushLine(lines, "Map stats", header);
         for (const auto& st : e.importantStats) {
@@ -173,9 +181,11 @@ inline void DrawHoverBreakdown(const ScreenRect& item, const std::string& title,
     }
 
     if (e.border) {
-        PushLine(lines, "Border match", header);
+        PushLine(lines, e.borderName.empty() ? std::string("Border match")
+                                             : "Border: " + e.borderName,
+                 ColF(e.borderColor));
         for (const auto& c : e.borderMet)
-            PushLine(lines, "  " + c, ColF(s.borderColor), 8.f);
+            PushLine(lines, "  " + c, ColF(e.borderColor), 8.f);
     }
 
     if (lines.empty()) return;

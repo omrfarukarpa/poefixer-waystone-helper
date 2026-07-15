@@ -1261,6 +1261,16 @@ public:
         return raw.area_change_counter;
     }
 
+    // Cheap town/hideout flag WITHOUT the per-entity enumeration that GetSnapshot()
+    // does in Snapshot::FromAbi (same pattern as GetAreaChangeCounter — the raw ABI
+    // fill copies only scalars + player/maps/vitals). Use it to gate map-content
+    // overlays every frame. false when not in game.
+    bool IsTownOrHideout() const {
+        SnapshotAbi raw{};
+        if (m_abi && m_abi->get_snapshot) m_abi->get_snapshot(&raw);
+        return raw.vitals.is_town_or_hideout != 0;
+    }
+
     GameState GetState() const {
         return static_cast<GameState>(
             (m_abi && m_abi->get_state) ? m_abi->get_state() : PSDK_GAME_STATE_NOT_LOADED);
@@ -1600,6 +1610,39 @@ public:
                 return 1;
             },
             &c);
+        return out;
+    }
+
+    // One evaluated skill stat (EnumerateSkillStats). StatId is the Stats.dat
+    // ROW INDEX + 1 (the game's runtime stat key — 0 is the "no stat"
+    // sentinel), ascending within a set. Values are raw int32; many are x100
+    // fixed-point. Useful runtime ids: 691 = attacks/s*100, 692 = DPS*100,
+    // 695 = casts/s*100, 1982/1983 = avg damage per hit/use *100, 694 = base
+    // cast time ms, 2079 = "shows average damage instead of DPS" flag.
+    struct SkillStatEntry {
+        int SetIndex = 0;   // groups pairs into the skill's stat sets (emission order)
+        int StatId   = 0;
+        int Value    = 0;
+    };
+
+    // Evaluated per-skill stat sets for ONE active skill. Pass
+    // ActiveSkill::SkillDetailsAddr from an EnumerateActiveSkills result of the
+    // SAME frame (skill addresses go stale across frames/area changes; a stale
+    // address safely returns empty). Works for any actor's skills — including
+    // minions, whose combat blocks carry real aps/dps values. NOTE: the
+    // DPS-family stats are VIRTUAL (engine compute callbacks) — they appear
+    // only where the game itself evaluated them (the character-sheet-selected
+    // skill, minion combat stats); absence means "not evaluated", not zero.
+    // Returns empty if the host predates this API (HostAbi tail; null-checked).
+    std::vector<SkillStatEntry> EnumerateSkillStats(uintptr_t skillDetailsAddr) const {
+        std::vector<SkillStatEntry> out;
+        if (!m_host || !m_host->enumerate_skill_stats) return out;
+        m_host->enumerate_skill_stats(skillDetailsAddr,
+            [](int32_t set, int32_t id, int32_t value, void* ud) -> int32_t {
+                static_cast<std::vector<SkillStatEntry>*>(ud)->push_back({ set, id, value });
+                return 1;
+            },
+            &out);
         return out;
     }
 
