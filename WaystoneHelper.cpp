@@ -20,7 +20,7 @@
 #include <unordered_map>
 #include <vector>
 
-inline constexpr const char* kWaystoneHelperVersion    = "1.3.0";
+inline constexpr const char* kWaystoneHelperVersion    = "1.4.0";
 inline constexpr const char* kWaystoneHelperMaintainer = "Omer Faruk ARPA";
 
 using WaystoneHelperConfig::Settings;
@@ -66,6 +66,9 @@ public:
             ImGui::SetCurrentContext(static_cast<ImGuiContext*>(ctx()->ImGuiContext));
         if (!ctx()->Game.IsForeground()) return;
 
+        PollOverlayHotkey();
+        if (m_overlayHidden) return;
+
         const ImVec2 disp = ImGui::GetIO().DisplaySize;
         RefreshIfNeeded(disp.x, disp.y);
 
@@ -99,7 +102,18 @@ public:
                             kWaystoneHelperVersion, kWaystoneHelperMaintainer);
         ImGui::Checkbox("Enable Waystone Helper", &m_settings.enabled);
         ImGui::SameLine();
-        ImGui::Checkbox("Show overlay", &m_settings.overlayEnabled);
+        if (ImGui::Checkbox("Show overlay", &m_settings.overlayEnabled))
+            m_overlayHidden = false;
+
+        DrawKeyBinder("Overlay toggle hotkey", &m_settings.toggleOverlayVk);
+        HelpMarker("Press this key in-game to instantly hide/show the whole overlay, "
+                   "e.g. to see the game's own highlight while using Alchemy or "
+                   "Exalted Orbs on maps.");
+        if (m_overlayHidden) {
+            ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(230, 190, 90, 255));
+            ImGui::TextUnformatted("Overlay is currently hidden by the hotkey.");
+            ImGui::PopStyleColor();
+        }
 
         if (ImGui::CollapsingHeader("How to use")) {
             ImGui::TextWrapped(
@@ -145,6 +159,11 @@ private:
     std::uintptr_t m_debugAddr = 0;
     std::string m_debugName;
     std::string m_debugPath;
+
+    bool m_overlayHidden = false;
+    bool m_toggleWasDown = false;
+    int* m_bindTarget = nullptr;
+    int  m_bindWaitRelease = 0;
 
     int m_lastVisibleCount = 0;
     int m_lastMatchedCount = 0;
@@ -203,6 +222,80 @@ private:
                 return &vw;
         }
         return nullptr;
+    }
+
+    void PollOverlayHotkey() {
+        const int vk = m_settings.toggleOverlayVk;
+        if (vk <= 0) {
+            m_overlayHidden = false;
+            m_toggleWasDown = false;
+            return;
+        }
+        if (m_bindTarget) {
+            m_toggleWasDown = false;
+            return;
+        }
+        if (m_bindWaitRelease) {
+            if ((GetAsyncKeyState(m_bindWaitRelease) & 0x8000) == 0)
+                m_bindWaitRelease = 0;
+            m_toggleWasDown = false;
+            return;
+        }
+        const bool down = (GetAsyncKeyState(vk) & 0x8000) != 0;
+        if (down && !m_toggleWasDown)
+            m_overlayHidden = !m_overlayHidden;
+        m_toggleWasDown = down;
+    }
+
+    void DrawKeyBinder(const char* label, int* vk) {
+        ImGui::PushID(label);
+        if (m_bindTarget == vk) {
+            ImGui::Button("Press a key...  (Esc to cancel)", ImVec2(220.f, 0.f));
+            if ((GetAsyncKeyState(VK_ESCAPE) & 0x8000) != 0) {
+                m_bindTarget = nullptr;
+            } else {
+                for (int i = 4; i < 255; ++i) {
+                    if ((GetAsyncKeyState(i) & 0x8000) != 0) {
+                        *vk = i;
+                        m_bindWaitRelease = i;
+                        m_bindTarget = nullptr;
+                        break;
+                    }
+                }
+            }
+        } else {
+            char btn[64];
+            std::snprintf(btn, sizeof(btn), "%s", VkName(*vk).c_str());
+            if (ImGui::Button(btn, ImVec2(220.f, 0.f))) m_bindTarget = vk;
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Clear")) {
+            *vk = 0;
+            m_overlayHidden = false;
+            if (m_bindTarget == vk) m_bindTarget = nullptr;
+        }
+        ImGui::SameLine();
+        ImGui::TextUnformatted(label);
+        ImGui::PopID();
+    }
+
+    static std::string VkName(int vk) {
+        switch (vk) {
+            case 0:           return "Click to bind";
+            case VK_LBUTTON:  return "Mouse1";
+            case VK_RBUTTON:  return "Mouse2";
+            case VK_MBUTTON:  return "Mouse3";
+            case VK_XBUTTON1: return "Mouse4";
+            case VK_XBUTTON2: return "Mouse5";
+            default: break;
+        }
+        UINT sc = MapVirtualKeyA(static_cast<UINT>(vk), MAPVK_VK_TO_VSC);
+        char name[64] = {0};
+        if (sc != 0 && GetKeyNameTextA(static_cast<LONG>(sc << 16), name, sizeof(name)) > 0)
+            return std::string(name);
+        char fallback[16];
+        std::snprintf(fallback, sizeof(fallback), "0x%02X", vk);
+        return std::string(fallback);
     }
 
     static void HelpMarker(const char* desc) {

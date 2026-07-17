@@ -124,6 +124,8 @@ struct Settings {
     bool readMods = true;
     bool debugMode = false;
 
+    int   toggleOverlayVk = 0;
+
     int   scanIntervalMs = 650;
     int   targetAffixCount = 8;
     int   borderThickness = 3;
@@ -202,6 +204,7 @@ struct Settings {
             showHoverBreakdown = j.value("show_hover_breakdown", showHoverBreakdown);
             readMods = j.value("read_mods", readMods);
             debugMode = j.value("debug_mode", debugMode);
+            toggleOverlayVk = std::clamp(j.value("toggle_overlay_vk", toggleOverlayVk), 0, 254);
 
             scanIntervalMs = std::clamp(j.value("scan_interval_ms", scanIntervalMs),
                                         kScanIntervalMinMs, kScanIntervalMaxMs);
@@ -269,6 +272,7 @@ struct Settings {
             j["show_hover_breakdown"] = showHoverBreakdown;
             j["read_mods"] = readMods;
             j["debug_mode"] = debugMode;
+            j["toggle_overlay_vk"] = toggleOverlayVk;
             j["scan_interval_ms"] = scanIntervalMs;
             j["target_affix_count"] = targetAffixCount;
             j["border_thickness"] = borderThickness;

@@ -31,6 +31,9 @@ Unofficial third-party game tool. Maintainer: Ömer Faruk ARPA.
   0/Any are ignored.
 - **Hover breakdown panel**: hover a waystone to see exactly which stats, groups and
   rules matched.
+- **Overlay toggle hotkey**: bind any key to instantly hide/show the whole overlay —
+  handy for seeing the game's own item highlight while using Alchemy or Exalted Orbs
+  on maps.
 
 Everything is configurable per color, and the overlay can hide itself on the item under
 the cursor so the game's own tooltip stays readable.
